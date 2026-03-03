@@ -1,0 +1,154 @@
+/* Zero JS animation — pure CSS static star field */
+/* Stars generated via box-shadow on a single ::before element */
+/* Color changes via CSS custom property + transition */
+
+.stars {
+  --star-color: 201, 168, 76;
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Layer 1 — small stars (1px) */
+.stars::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  /* 120 hand-distributed stars across the viewport */
+  box-shadow:
+    /* Top region */
+    8vw   4vh  0 0  rgba(var(--star-color), 0.55),
+    15vw  9vh  0 0  rgba(var(--star-color), 0.35),
+    23vw  2vh  0 0  rgba(var(--star-color), 0.45),
+    31vw  7vh  0 0  rgba(var(--star-color), 0.60),
+    38vw  3vh  0 0  rgba(var(--star-color), 0.30),
+    46vw  8vh  0 0  rgba(var(--star-color), 0.50),
+    54vw  2vh  0 0  rgba(var(--star-color), 0.40),
+    62vw  6vh  0 0  rgba(var(--star-color), 0.55),
+    70vw  4vh  0 0  rgba(var(--star-color), 0.35),
+    78vw  9vh  0 0  rgba(var(--star-color), 0.45),
+    86vw  3vh  0 0  rgba(var(--star-color), 0.60),
+    93vw  7vh  0 0  rgba(var(--star-color), 0.30),
+    /* Upper-mid region */
+    5vw   18vh 0 0  rgba(var(--star-color), 0.40),
+    12vw  14vh 0 0  rgba(var(--star-color), 0.55),
+    19vw  19vh 0 0  rgba(var(--star-color), 0.35),
+    27vw  13vh 0 0  rgba(var(--star-color), 0.45),
+    35vw  17vh 0 0  rgba(var(--star-color), 0.60),
+    43vw  12vh 0 0  rgba(var(--star-color), 0.30),
+    51vw  18vh 0 0  rgba(var(--star-color), 0.50),
+    59vw  14vh 0 0  rgba(var(--star-color), 0.40),
+    67vw  19vh 0 0  rgba(var(--star-color), 0.55),
+    75vw  13vh 0 0  rgba(var(--star-color), 0.35),
+    83vw  17vh 0 0  rgba(var(--star-color), 0.45),
+    91vw  12vh 0 0  rgba(var(--star-color), 0.60),
+    97vw  18vh 0 0  rgba(var(--star-color), 0.30),
+    /* Mid region */
+    3vw   28vh 0 0  rgba(var(--star-color), 0.50),
+    10vw  32vh 0 0  rgba(var(--star-color), 0.35),
+    17vw  27vh 0 0  rgba(var(--star-color), 0.55),
+    25vw  33vh 0 0  rgba(var(--star-color), 0.40),
+    33vw  28vh 0 0  rgba(var(--star-color), 0.45),
+    41vw  32vh 0 0  rgba(var(--star-color), 0.60),
+    49vw  27vh 0 0  rgba(var(--star-color), 0.30),
+    57vw  33vh 0 0  rgba(var(--star-color), 0.50),
+    65vw  28vh 0 0  rgba(var(--star-color), 0.40),
+    73vw  32vh 0 0  rgba(var(--star-color), 0.55),
+    81vw  27vh 0 0  rgba(var(--star-color), 0.35),
+    89vw  33vh 0 0  rgba(var(--star-color), 0.45),
+    96vw  28vh 0 0  rgba(var(--star-color), 0.60),
+    /* Lower-mid region */
+    6vw   43vh 0 0  rgba(var(--star-color), 0.30),
+    14vw  47vh 0 0  rgba(var(--star-color), 0.50),
+    22vw  42vh 0 0  rgba(var(--star-color), 0.40),
+    30vw  48vh 0 0  rgba(var(--star-color), 0.55),
+    38vw  43vh 0 0  rgba(var(--star-color), 0.35),
+    46vw  47vh 0 0  rgba(var(--star-color), 0.45),
+    54vw  42vh 0 0  rgba(var(--star-color), 0.60),
+    62vw  48vh 0 0  rgba(var(--star-color), 0.30),
+    70vw  43vh 0 0  rgba(var(--star-color), 0.50),
+    78vw  47vh 0 0  rgba(var(--star-color), 0.40),
+    86vw  42vh 0 0  rgba(var(--star-color), 0.55),
+    94vw  48vh 0 0  rgba(var(--star-color), 0.35),
+    /* Mid-lower */
+    2vw   57vh 0 0  rgba(var(--star-color), 0.45),
+    9vw   62vh 0 0  rgba(var(--star-color), 0.60),
+    16vw  57vh 0 0  rgba(var(--star-color), 0.30),
+    24vw  63vh 0 0  rgba(var(--star-color), 0.50),
+    32vw  58vh 0 0  rgba(var(--star-color), 0.40),
+    40vw  62vh 0 0  rgba(var(--star-color), 0.55),
+    48vw  57vh 0 0  rgba(var(--star-color), 0.35),
+    56vw  63vh 0 0  rgba(var(--star-color), 0.45),
+    64vw  58vh 0 0  rgba(var(--star-color), 0.60),
+    72vw  62vh 0 0  rgba(var(--star-color), 0.30),
+    80vw  57vh 0 0  rgba(var(--star-color), 0.50),
+    88vw  63vh 0 0  rgba(var(--star-color), 0.40),
+    95vw  58vh 0 0  rgba(var(--star-color), 0.55),
+    /* Lower region */
+    4vw   72vh 0 0  rgba(var(--star-color), 0.35),
+    11vw  77vh 0 0  rgba(var(--star-color), 0.45),
+    18vw  73vh 0 0  rgba(var(--star-color), 0.60),
+    26vw  78vh 0 0  rgba(var(--star-color), 0.30),
+    34vw  72vh 0 0  rgba(var(--star-color), 0.50),
+    42vw  77vh 0 0  rgba(var(--star-color), 0.40),
+    50vw  73vh 0 0  rgba(var(--star-color), 0.55),
+    58vw  78vh 0 0  rgba(var(--star-color), 0.35),
+    66vw  72vh 0 0  rgba(var(--star-color), 0.45),
+    74vw  77vh 0 0  rgba(var(--star-color), 0.60),
+    82vw  73vh 0 0  rgba(var(--star-color), 0.30),
+    90vw  78vh 0 0  rgba(var(--star-color), 0.50),
+    97vw  73vh 0 0  rgba(var(--star-color), 0.40),
+    /* Bottom region */
+    7vw   87vh 0 0  rgba(var(--star-color), 0.55),
+    13vw  92vh 0 0  rgba(var(--star-color), 0.35),
+    21vw  88vh 0 0  rgba(var(--star-color), 0.45),
+    29vw  93vh 0 0  rgba(var(--star-color), 0.60),
+    37vw  87vh 0 0  rgba(var(--star-color), 0.30),
+    45vw  92vh 0 0  rgba(var(--star-color), 0.50),
+    53vw  88vh 0 0  rgba(var(--star-color), 0.40),
+    61vw  93vh 0 0  rgba(var(--star-color), 0.55),
+    69vw  87vh 0 0  rgba(var(--star-color), 0.35),
+    77vw  92vh 0 0  rgba(var(--star-color), 0.45),
+    85vw  88vh 0 0  rgba(var(--star-color), 0.60),
+    92vw  93vh 0 0  rgba(var(--star-color), 0.30);
+  width: 1.5px;
+  height: 1.5px;
+  border-radius: 50%;
+  transition: box-shadow 1400ms ease;
+}
+
+/* Layer 2 — larger accent stars (2px) */
+.stars::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  box-shadow:
+    20vw  22vh 0 1px rgba(var(--star-color), 0.45),
+    47vw  11vh 0 1px rgba(var(--star-color), 0.35),
+    71vw  38vh 0 1px rgba(var(--star-color), 0.50),
+    88vw  55vh 0 1px rgba(var(--star-color), 0.40),
+    35vw  66vh 0 1px rgba(var(--star-color), 0.45),
+    12vw  81vh 0 1px rgba(var(--star-color), 0.35),
+    60vw  74vh 0 1px rgba(var(--star-color), 0.50),
+    93vw  17vh 0 1px rgba(var(--star-color), 0.40),
+    55vw  44vh 0 1px rgba(var(--star-color), 0.55),
+    28vw  89vh 0 1px rgba(var(--star-color), 0.35),
+    76vw  62vh 0 1px rgba(var(--star-color), 0.45),
+    4vw   51vh 0 1px rgba(var(--star-color), 0.40);
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  transition: box-shadow 1400ms ease;
+}
+
+/* Respect reduced motion — keep stars but skip any future transitions */
+@media (prefers-reduced-motion: reduce) {
+  .stars::before,
+  .stars::after {
+    transition: none;
+  }
+}

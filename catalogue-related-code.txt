@@ -1,0 +1,2247 @@
+﻿===== app/catalogue/page.tsx =====
+import CataloguePage from "@/components/catalogue/CataloguePage";
+
+export const dynamic = "force-static";
+export const revalidate = false;
+
+export default function Catalogue(): JSX.Element {
+  return <CataloguePage />;
+}
+
+
+===== app/catalogue/layout.tsx =====
+export default function CatalogueLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}): JSX.Element {
+  return (
+    <>
+      {/* Preload panel-1 (Vitamin C Oil Serum) image before React hydrates */}
+      <link
+        rel="preload"
+        href="/images/1.png"
+        as="image"
+        type="image/png"
+      />
+      {children}
+    </>
+  );
+}
+
+
+===== components/catalogue/CataloguePage.tsx =====
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import Nav from "@/components/ui/Nav";
+import StarCanvas from "@/components/cosmos/StarCanvas";
+import CatalogueTrack from "./CatalogueTrack";
+import { products } from "@/lib/data/products";
+import { themes } from "@/lib/data/themes";
+import { ThemeToken } from "@/types";
+import styles from "./Catalogue.module.css";
+
+export default function CataloguePage(): JSX.Element {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isFinale, setIsFinale] = useState(false);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  const finaleThemeToken: ThemeToken = {
+    c: [176, 108, 130],
+    gold: "#d7a5b8",
+    gl: "#f0d7df",
+    bg: "radial-gradient(ellipse at 22% 56%, rgba(90,26,47,0.4), transparent 58%),radial-gradient(ellipse at 82% 18%, rgba(153,89,111,0.18), transparent 52%),linear-gradient(160deg, #0d070b 0%, #220d17 52%, #060506 100%)",
+    glow: "radial-gradient(circle, rgba(186,123,146,0.4), transparent 72%)",
+  };
+  const productTheme = products[activeIndex]?.theme ?? "vc";
+  const activeToken = isFinale ? finaleThemeToken : themes[productTheme];
+  const targetColor = activeToken.c;
+
+  // Apply theme to DOM
+  useEffect(() => {
+    const t = activeToken;
+    document.documentElement.style.setProperty("--gold", t.gold);
+    document.documentElement.style.setProperty("--gold-light", t.gl);
+    document.body.style.background = t.bg;
+  }, [activeToken]);
+
+  // Set initial theme on mount
+  useEffect(() => {
+    document.body.style.transition = "background 1.4s ease";
+    const t = themes["vc"];
+    document.documentElement.style.setProperty("--gold", t.gold);
+    document.documentElement.style.setProperty("--gold-light", t.gl);
+    document.body.style.background = t.bg;
+
+    // Cleanup: reset DOM styles when leaving catalogue
+    return () => {
+      document.body.style.background = "";
+      document.body.style.transition = "";
+      document.documentElement.style.removeProperty("--gold");
+      document.documentElement.style.removeProperty("--gold-light");
+    };
+  }, []);
+
+  return (
+    <div className={styles.page}>
+      <Nav />
+      <StarCanvas targetColor={targetColor} />
+      <CatalogueTrack
+        ref={trackRef}
+        products={products}
+        onActiveIndexChange={setActiveIndex}
+        onFinaleChange={setIsFinale}
+      />
+    </div>
+  );
+}
+
+
+===== components/catalogue/Catalogue.module.css =====
+.page {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg);
+}
+
+
+===== components/catalogue/CatalogueTrack.tsx =====
+"use client";
+
+import { forwardRef, useEffect, useRef } from "react";
+import { Product } from "@/types";
+import ProductPanel from "./ProductPanel";
+import Finale from "@/components/finale/Finale";
+import styles from "./CatalogueTrack.module.css";
+
+interface CatalogueTrackProps {
+  products: Product[];
+  onActiveIndexChange: (index: number) => void;
+  onFinaleChange: (value: boolean) => void;
+}
+
+const CatalogueTrack = forwardRef<HTMLDivElement, CatalogueTrackProps>(
+  ({ products, onActiveIndexChange, onFinaleChange }, ref) => {
+    const innerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      const track = innerRef.current;
+      if (!track) return;
+      const totalPanels = products.length + 1;
+      let wheelLocked = false;
+      let unlockWheelTimer: number | null = null;
+
+      const getCurrentIndex = (): number => {
+        const panelWidth = window.innerWidth || 1;
+        return Math.round(track.scrollLeft / panelWidth);
+      };
+
+      const goToIndex = (index: number): void => {
+        const clampedIndex = Math.max(0, Math.min(totalPanels - 1, index));
+        track.scrollTo({ left: clampedIndex * window.innerWidth, behavior: "smooth" });
+      };
+
+      // IntersectionObserver â€” detects which panel is visible
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const index = Number(entry.target.getAttribute("data-index"));
+            const isFinale = entry.target.getAttribute("data-finale") === "true";
+
+            if (isFinale) {
+              onFinaleChange(true);
+            } else {
+              onFinaleChange(false);
+              onActiveIndexChange(index);
+            }
+          });
+        },
+        {
+          root: track,
+          threshold: 0.55,
+        },
+      );
+
+      const panels = track.querySelectorAll("[data-panel]");
+      panels.forEach((panel) => observer.observe(panel));
+
+      // Keyboard navigation
+      const onKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+          goToIndex(getCurrentIndex() + 1);
+        }
+        if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+          goToIndex(getCurrentIndex() - 1);
+        }
+      };
+
+      window.addEventListener("keydown", onKeyDown);
+
+      // Map vertical wheel to horizontal catalogue navigation
+      const onWheel = (event: WheelEvent) => {
+        const absY = Math.abs(event.deltaY);
+        const absX = Math.abs(event.deltaX);
+        if (absY <= absX) return;
+        event.preventDefault();
+        if (wheelLocked) return;
+
+        wheelLocked = true;
+        const direction = event.deltaY > 0 ? 1 : -1;
+        goToIndex(getCurrentIndex() + direction);
+
+        unlockWheelTimer = window.setTimeout(() => {
+          wheelLocked = false;
+        }, 480);
+      };
+      track.addEventListener("wheel", onWheel, { passive: false });
+
+      // Scroll restoration â€” save position on scroll
+      const onScroll = () => {
+        sessionStorage.setItem("catalogue-scroll", String(track.scrollLeft));
+      };
+      track.addEventListener("scroll", onScroll, { passive: true });
+
+      // Restore scroll position on mount
+      const savedScroll = sessionStorage.getItem("catalogue-scroll");
+      if (savedScroll) {
+        track.scrollLeft = parseInt(savedScroll, 10);
+      }
+
+      return () => {
+        observer.disconnect();
+        window.removeEventListener("keydown", onKeyDown);
+        track.removeEventListener("wheel", onWheel);
+        track.removeEventListener("scroll", onScroll);
+        if (unlockWheelTimer !== null) {
+          window.clearTimeout(unlockWheelTimer);
+        }
+      };
+    }, [products, onActiveIndexChange, onFinaleChange]);
+
+    return (
+      <div ref={innerRef} className={styles.track} data-catalogue-track>
+        {products.map((product, index) => (
+          <div
+            key={product.id}
+            data-panel
+            data-index={index}
+            className={styles.slide}
+          >
+            <ProductPanel product={product} />
+          </div>
+        ))}
+        <div
+          data-panel
+          data-finale="true"
+          className={styles.slide}
+        >
+          <Finale active />
+        </div>
+      </div>
+    );
+  },
+);
+
+CatalogueTrack.displayName = "CatalogueTrack";
+export default CatalogueTrack;
+
+
+===== components/catalogue/CatalogueTrack.module.css =====
+/* THE ENTIRE HORIZONTAL SCROLL MECHANISM â€” pure CSS, zero JS */
+.track {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+
+  /* Hide scrollbar visually, keep functionality */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.slide {
+  flex-shrink: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  position: relative;
+  overflow: hidden;
+
+  /* Skip rendering for off-screen panels */
+  content-visibility: auto;
+  contain-intrinsic-size: 100vw 100vh;
+}
+
+@media (max-width: 1279px) {
+  .slide {
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+
+===== components/catalogue/ProductPanel.tsx =====
+"use client";
+
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { productCatalog } from "@/lib/data/productCatalog";
+import { Product } from "@/types";
+import BotanicalVC from "./botanicals/BotanicalVC";
+import BotanicalAloe from "./botanicals/BotanicalAloe";
+import BotanicalHA from "./botanicals/BotanicalHA";
+import styles from "./ProductPanel.module.css";
+
+interface ProductPanelProps {
+  product: Product;
+}
+
+function assertNever(value: never): never {
+  throw new Error(`Unhandled theme: ${value}`);
+}
+
+function getBotanical(theme: Product["theme"]): JSX.Element {
+  switch (theme) {
+    case "vc":
+      return <BotanicalVC />;
+    case "aloe":
+      return <BotanicalAloe />;
+    case "ha":
+      return <BotanicalHA />;
+    case "goldButter":
+      return <BotanicalVC />;
+    case "milk":
+      return <BotanicalHA />;
+    default:
+      return assertNever(theme);
+  }
+}
+
+function getPanelBgClass(theme: Product["theme"]): string {
+  switch (theme) {
+    case "vc":
+      return styles.vcBg;
+    case "aloe":
+      return styles.aloeBg;
+    case "ha":
+      return styles.haBg;
+    case "goldButter":
+      return styles.goldButterBg;
+    case "milk":
+      return styles.milkBg;
+    default:
+      return assertNever(theme);
+  }
+}
+
+function getCompactOverview(prodId: Product["prodId"]): string {
+  switch (prodId) {
+    case "p1":
+      return "Daily brightening support with lightweight comfort and refined glow.";
+    case "p2":
+      return "Fresh cleansing care with calm hydration and balanced after-feel.";
+    case "p3":
+      return "High-hydration support for smoother texture and soft, plump appearance.";
+    case "p4":
+      return "Deep body nourishment with velvety comfort and lasting softness.";
+    case "p5":
+      return "Milky hydration care for a calm barrier feel and silky finish.";
+    default:
+      return assertNever(prodId);
+  }
+}
+
+function getCompactIngredient(prodId: Product["prodId"]): string {
+  switch (prodId) {
+    case "p1":
+      return "Antioxidant and lipid complex";
+    case "p2":
+      return "Botanical cleanse and comfort blend";
+    case "p3":
+      return "Hydration matrix and soothing support";
+    case "p4":
+      return "Triple butter and vitamin infusion";
+    case "p5":
+      return "Milky humectant and barrier care";
+    default:
+      return assertNever(prodId);
+  }
+}
+
+export default function ProductPanel({ product }: ProductPanelProps): JSX.Element {
+  const details = productCatalog[product.prodId];
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const textCardRef = useRef<HTMLDivElement>(null);
+  const imageWrapRef = useRef<HTMLDivElement>(null);
+  const statsCardRef = useRef<HTMLDivElement>(null);
+  const productLineRef = useRef<HTMLDivElement>(null);
+  const brandRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isModalOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsModalOpen(false);
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isModalOpen]);
+
+  useEffect(() => {
+    setIsModalOpen(false);
+    setActiveImageIndex(0);
+  }, [product.prodId]);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const timeline = gsap.timeline({ paused: true });
+    timeline
+      .fromTo(
+        textCardRef.current,
+        { opacity: 0, y: 28 },
+        { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" },
+      )
+      .fromTo(
+        imageWrapRef.current,
+        { opacity: 0, y: 34, scale: 0.96 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "power2.out" },
+        "<0.08",
+      )
+      .fromTo(
+        statsCardRef.current,
+        { opacity: 0, y: 26 },
+        { opacity: 1, y: 0, duration: 0.52, ease: "power2.out" },
+        "<0.1",
+      )
+      .fromTo(
+        [productLineRef.current, brandRef.current],
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.45, ease: "power2.out", stagger: 0.08 },
+        "<0.06",
+      );
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          timeline.restart();
+        }
+      },
+      { threshold: 0.55 },
+    );
+    observer.observe(section);
+
+    return () => {
+      observer.disconnect();
+      timeline.kill();
+    };
+  }, [product.prodId]);
+
+  const handleSpotlightMove = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+    event.currentTarget.style.setProperty("--mx", `${x}%`);
+    event.currentTarget.style.setProperty("--my", `${y}%`);
+  };
+
+  const handleSpotlightLeave = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.currentTarget.style.setProperty("--mx", "50%");
+    event.currentTarget.style.setProperty("--my", "50%");
+  };
+
+  const handlePanelLightMove = (event: React.MouseEvent<HTMLElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+    event.currentTarget.style.setProperty("--px", `${x}%`);
+    event.currentTarget.style.setProperty("--py", `${y}%`);
+  };
+
+  const handlePanelLightLeave = (event: React.MouseEvent<HTMLElement>) => {
+    event.currentTarget.style.setProperty("--px", "50%");
+    event.currentTarget.style.setProperty("--py", "50%");
+  };
+
+  return (
+    <section
+      ref={sectionRef}
+      className={styles.panel}
+      aria-labelledby={`${product.id}-title`}
+      onMouseMove={handlePanelLightMove}
+      onMouseLeave={handlePanelLightLeave}
+    >
+      <div className={`${styles.panelBg} ${getPanelBgClass(product.theme)}`} />
+      <div className={styles.panelVeil} aria-hidden />
+      {getBotanical(product.theme)}
+
+      <div className={styles.ring} aria-hidden />
+      <div className={styles.ringInner} aria-hidden />
+
+      <div className={styles.content}>
+        <div ref={textCardRef} className={styles.textCard}>
+          <span className={styles.ghost}>{product.ghost}</span>
+          <span className={styles.num}>{product.num}</span>
+          <h2 id={`${product.id}-title`} className={styles.title}>
+            {product.title}
+          </h2>
+          <p className={styles.body}>{getCompactOverview(product.prodId)}</p>
+          <span className={styles.ingredient}>{getCompactIngredient(product.prodId)}</span>
+        </div>
+
+        <div ref={imageWrapRef} className={styles.imageWrap}>
+          <div ref={productLineRef} className={styles.productLine} aria-hidden>
+            {product.title.replace("\n", " ")}
+          </div>
+          <div className={styles.imageShadow} aria-hidden />
+          <div className={styles.imageFloat}>
+            <button
+              type="button"
+              className={styles.imageButton}
+              onMouseMove={handleSpotlightMove}
+              onMouseLeave={handleSpotlightLeave}
+              onClick={() => setIsModalOpen(true)}
+              aria-haspopup="dialog"
+              aria-expanded={isModalOpen}
+              aria-controls={`product-modal-${product.id}`}
+            >
+              <span className={styles.imageHint}>View Details</span>
+              <Image
+                src={product.image}
+                alt={product.title.replace("\n", " ")}
+                width={280}
+                height={500}
+                className={styles.productImg}
+                priority={product.prodId === "p1"}
+                loading={product.prodId === "p1" ? "eager" : "lazy"}
+                sizes="(max-width: 889px) 160px, (max-width: 1556px) 18vw, 280px"
+              />
+            </button>
+          </div>
+          <div ref={brandRef} className={styles.panelBrand} aria-hidden>
+            <Image src="/images/ezma.svg" alt="Verrdelle" width={120} height={40} className={styles.panelBrandLogo} />
+          </div>
+        </div>
+
+        <div ref={statsCardRef} className={styles.statsCard}>
+          <div className={styles.stats}>
+            {product.stats.slice(0, 2).map((stat) => (
+              <div key={stat.label} className={styles.statRow}>
+                <span className={styles.value}>{stat.value}</span>
+                <span className={styles.label}>{stat.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.jade} aria-hidden>
+        <span>{product.seriesLabel}</span>
+      </div>
+
+      {isModalOpen && (
+        <div className={styles.modalOverlay} onClick={() => setIsModalOpen(false)}>
+          <div
+            id={`product-modal-${product.id}`}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={`product-modal-title-${product.id}`}
+            className={styles.modalCard}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className={styles.modalClose}
+              onClick={() => setIsModalOpen(false)}
+              aria-label="Close product details"
+            >
+              Close
+            </button>
+
+            <div className={styles.modalMedia}>
+              <div className={styles.modalMainImageWrap}>
+                <Image
+                  src={details.gallery[activeImageIndex]}
+                  alt={`${product.title.replace("\n", " ")} preview ${activeImageIndex + 1}`}
+                  fill
+                  className={styles.modalMainImage}
+                  sizes="(max-width: 1023px) 90vw, 44vw"
+                />
+              </div>
+              <div className={styles.modalThumbRow}>
+                {details.gallery.map((src, index) => (
+                  <button
+                    key={`${src}-${index}`}
+                    type="button"
+                    className={`${styles.modalThumb} ${index === activeImageIndex ? styles.modalThumbActive : ""}`}
+                    onClick={() => setActiveImageIndex(index)}
+                    aria-label={`Show image ${index + 1}`}
+                  >
+                    <span className={styles.modalThumbImageWrap}>
+                      <Image
+                        src={src}
+                        alt={`${product.title.replace("\n", " ")} thumbnail ${index + 1}`}
+                        fill
+                        className={styles.modalThumbImage}
+                        sizes="72px"
+                      />
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className={styles.modalContent}>
+              <span className={styles.modalNum}>{product.num}</span>
+              <h3 id={`product-modal-title-${product.id}`} className={styles.modalTitle}>
+                {product.title.replace("\n", " ")}
+              </h3>
+              <p className={styles.modalHeadline}>{details.headline}</p>
+              <p className={styles.modalBody}>{product.body}</p>
+              <p className={styles.modalLongDescription}>{details.longDescription}</p>
+              <p className={styles.modalIngredient}>{product.ingredient}</p>
+              <p className={styles.modalUsage}>{details.usage}</p>
+              <div className={styles.modalStats}>
+                {product.stats.map((stat) => (
+                  <div key={`${product.id}-${stat.label}`} className={styles.modalStat}>
+                    <span className={styles.modalStatValue}>{stat.value}</span>
+                    <span className={styles.modalStatLabel}>{stat.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+
+===== components/catalogue/ProductPanel.module.css =====
+.panel {
+  --px: 50%;
+  --py: 50%;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* â”€â”€ Backgrounds â”€â”€ */
+.panelBg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.panelVeil {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background:
+    radial-gradient(circle 260px at var(--px) var(--py), rgba(255,255,255,0.2), rgba(255,255,255,0) 60%),
+    rgba(6, 8, 11, 0.22);
+}
+
+.vcBg {
+  background:
+    radial-gradient(ellipse at 15% 50%, rgba(220,110,10,0.18), transparent 55%),
+    radial-gradient(ellipse at 85% 30%, rgba(255,180,40,0.12), transparent 50%);
+}
+
+.aloeBg {
+  background:
+    radial-gradient(ellipse at 20% 60%, rgba(20,100,55,0.22), transparent 55%),
+    radial-gradient(ellipse at 80% 25%, rgba(60,180,100,0.1), transparent 50%);
+}
+
+.haBg {
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(232,223,210,0.08), transparent 68%),
+    radial-gradient(ellipse at 10% 80%, rgba(255,246,235,0.05), transparent 42%);
+}
+
+.goldButterBg {
+  background:
+    radial-gradient(ellipse at 18% 56%, rgba(240,142,122,0.2), transparent 56%),
+    radial-gradient(ellipse at 82% 24%, rgba(255,241,220,0.14), transparent 52%);
+}
+
+.milkBg {
+  background:
+    radial-gradient(ellipse at 20% 58%, rgba(235,224,205,0.14), transparent 58%),
+    radial-gradient(ellipse at 78% 24%, rgba(255,247,235,0.11), transparent 50%);
+}
+
+/* â”€â”€ Botanical SVG layer â”€â”€ */
+.panel > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* â”€â”€ Decorative rings â€” GPU compositor â”€â”€ */
+.ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(56vw, 760px);
+  height: min(56vw, 760px);
+  border-radius: 999px;
+  border: 1px solid rgba(232, 213, 163, 0.18);
+  pointer-events: none;
+  z-index: 1;
+  will-change: transform;
+}
+
+/* Static glow â€” doesn't animate, painted once and cached */
+.ring::before {
+  content: "";
+  position: absolute;
+  inset: -60px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 90px rgba(232,213,163,0.06), 0 0 100px rgba(201,168,76,0.08);
+  pointer-events: none;
+}
+
+.ringInner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(42vw, 560px);
+  height: min(42vw, 560px);
+  border-radius: 999px;
+  border: 1px dashed rgba(232, 213, 163, 0.24);
+  pointer-events: none;
+  z-index: 1;
+  will-change: transform;
+}
+
+/* â”€â”€ Content layout â”€â”€ */
+.content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(40px, 6vw, 120px);
+  width: 100%;
+  max-width: 1400px;
+  padding: 0 clamp(24px, 4vw, 80px);
+}
+
+/* â”€â”€ Text card (no backdrop-filter) â”€â”€ */
+.textCard {
+  width: min(460px, 33vw);
+  border-radius: 38% 62% 52% 48% / 42% 38% 62% 58%;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background:
+    radial-gradient(circle at 20% 18%, rgba(255, 255, 255, 0.13), transparent 52%),
+    linear-gradient(155deg, rgba(255, 255, 255, 0.09), rgba(8, 9, 11, 0.72));
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  padding: clamp(20px, 2vw, 34px) clamp(22px, 2.2vw, 36px);
+}
+
+/* â”€â”€ Stats card (no backdrop-filter) â”€â”€ */
+.statsCard {
+  width: min(460px, 33vw);
+  border-radius: 56% 44% 40% 60% / 52% 58% 42% 48%;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background:
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.11), transparent 50%),
+    linear-gradient(155deg, rgba(255, 255, 255, 0.07), rgba(8, 9, 11, 0.75));
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.18);
+  padding: clamp(20px, 2vw, 34px) clamp(22px, 2.2vw, 36px);
+}
+
+/* â”€â”€ Image area â”€â”€ */
+.imageWrap {
+  position: relative;
+  flex-shrink: 0;
+  z-index: 12;
+  width: clamp(160px, 18vw, 280px);
+  height: clamp(290px, 32vw, 500px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.productLine {
+  position: absolute;
+  top: -34px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(440px, 70vw);
+  width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.82);
+  text-shadow: 0 0 22px rgba(255,255,255,0.16);
+  border-bottom: 1px solid rgba(255,255,255,0.22);
+  padding-bottom: 8px;
+  animation: productTyping 1.5s steps(24, end) 0.2s forwards;
+  pointer-events: none;
+}
+
+/* Static shadow â€” painted once, cached */
+.imageShadow {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  filter: blur(20px);
+}
+
+.imageFloat {
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+  animation: imageBob 5.5s ease-in-out 1;
+}
+
+.imageButton {
+  --mx: 50%;
+  --my: 50%;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  border-radius: 24px;
+  cursor: pointer;
+  padding: 0;
+  overflow: hidden;
+}
+
+.imageButton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  transition: opacity 0.25s ease;
+  z-index: 2;
+}
+
+.imageButton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle 140px at var(--mx) var(--my), rgba(255,255,255,0.28), rgba(255,255,255,0) 62%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.imageHint {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translate(-50%, 10px);
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.26);
+  background: rgba(8, 10, 12, 0.52);
+  color: rgba(255,255,255,0.88);
+  font-size: 8px;
+  letter-spacing: 2.8px;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  opacity: 0;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  z-index: 4;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.imageButton:hover::after,
+.imageButton:focus-visible::after {
+  opacity: 1;
+}
+
+.imageButton:hover .imageHint,
+.imageButton:focus-visible .imageHint {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.imageButton:focus-visible {
+  outline: 1px solid var(--gold-light);
+  outline-offset: 2px;
+}
+
+@keyframes imageBob {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-18px) rotate(1.5deg); }
+}
+
+.productImg {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.panelBrand {
+  position: absolute;
+  bottom: -58px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  opacity: 0.68;
+}
+
+.panelBrandLogo {
+  width: auto;
+  height: 28px;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(5, 8, 12, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modalCard {
+  position: relative;
+  width: min(1120px, 96vw);
+  max-height: min(92vh, 820px);
+  overflow: auto;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255,255,255,0.09), transparent 52%),
+    linear-gradient(160deg, rgba(16, 18, 23, 0.95), rgba(10, 12, 14, 0.96));
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+  display: grid;
+  grid-template-columns: minmax(300px, 44%) minmax(300px, 56%);
+  gap: clamp(18px, 2vw, 28px);
+  padding: clamp(18px, 2vw, 30px);
+}
+
+.modalClose {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 999px;
+  background: rgba(10, 12, 16, 0.58);
+  color: var(--gold-light);
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.modalMedia {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modalMainImageWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255,255,255,0.12), transparent 58%),
+    rgba(7, 10, 14, 0.72);
+  overflow: hidden;
+}
+
+.modalMainImage {
+  object-fit: contain;
+}
+
+.modalThumbRow {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.modalThumb {
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  background: rgba(9, 11, 15, 0.7);
+  padding: 0;
+  width: 72px;
+  height: 72px;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.modalThumbActive {
+  border-color: var(--gold-light);
+}
+
+.modalThumbImageWrap {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.modalThumbImage {
+  object-fit: contain;
+}
+
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 24px;
+}
+
+.modalNum {
+  font-size: 8px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.84;
+}
+
+.modalTitle {
+  font-family: var(--font-im-fell), serif;
+  font-size: clamp(24px, 2.6vw, 42px);
+  line-height: 1.05;
+  color: var(--gold-light);
+}
+
+.modalHeadline {
+  font-family: var(--font-cormorant), serif;
+  font-size: clamp(17px, 1.8vw, 24px);
+  font-style: italic;
+  color: rgba(255,255,255,0.88);
+}
+
+.modalBody,
+.modalLongDescription,
+.modalUsage {
+  font-family: var(--font-cormorant), serif;
+  font-size: clamp(15px, 1.35vw, 19px);
+  line-height: 1.58;
+  color: var(--muted);
+}
+
+.modalIngredient {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  border: 1px solid var(--gold-dim);
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-size: 8px;
+  letter-spacing: 2.8px;
+  text-transform: uppercase;
+  color: var(--gold);
+  width: fit-content;
+}
+
+.modalStats {
+  margin-top: 4px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.modalStat {
+  min-width: 92px;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 12px;
+  padding: 8px 10px;
+  background: rgba(8, 11, 14, 0.45);
+}
+
+.modalStatValue {
+  display: block;
+  font-family: var(--font-cormorant), serif;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--gold-light);
+}
+
+.modalStatLabel {
+  display: block;
+  margin-top: 3px;
+  font-size: 8px;
+  letter-spacing: 2.2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+}
+
+/* â”€â”€ Typography â”€â”€ */
+.ghost {
+  font-family: var(--font-cormorant), serif;
+  font-style: italic;
+  font-size: clamp(70px, 6vw, 110px);
+  color: rgba(255,255,255,0.06);
+  display: block;
+  line-height: 1;
+  margin-bottom: -18px;
+  letter-spacing: -2px;
+}
+
+.num {
+  font-size: 9px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.78;
+  display: block;
+  margin-bottom: 18px;
+}
+
+.title {
+  font-family: var(--font-im-fell), serif;
+  font-size: clamp(26px, 3vw, 48px);
+  color: var(--gold-light);
+  letter-spacing: 3px;
+  line-height: 1.1;
+  margin-bottom: 22px;
+  white-space: pre-line;
+}
+
+.body {
+  font-family: var(--font-cormorant), serif;
+  font-weight: 300;
+  font-size: clamp(13px, 1vw, 16px);
+  line-height: 1.5;
+  color: var(--muted);
+  max-width: 285px;
+}
+
+.ingredient {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 28px;
+  font-size: 8px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  padding: 9px 18px;
+  border-radius: 50px;
+}
+
+.ingredient::before {
+  content: "â—†";
+  font-size: 5px;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: flex-end;
+}
+
+.statRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: right;
+}
+
+.value {
+  font-family: var(--font-cormorant), serif;
+  font-size: clamp(20px, 2.1vw, 32px);
+  color: var(--gold-light);
+  line-height: 1;
+}
+
+.label {
+  font-size: 7px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.38);
+}
+
+@keyframes productTyping {
+  to {
+    width: 100%;
+  }
+}
+
+/* â”€â”€ Bottom series label â”€â”€ */
+.jade {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  z-index: 3;
+}
+
+.jade span {
+  font-size: 8px;
+  letter-spacing: 6px;
+  color: rgba(255,255,255,0.2);
+}
+
+.jade::before,
+.jade::after {
+  content: "";
+  width: 60px;
+  height: 1px;
+  display: block;
+  background: linear-gradient(90deg, transparent, var(--gold-dim));
+}
+
+.jade::after {
+  transform: scaleX(-1);
+}
+
+/* â”€â”€ Mobile â”€â”€ */
+@media (max-width: 1279px) {
+  .content {
+    display: grid;
+    grid-template-columns: minmax(140px, 34vw) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    gap: 12px;
+    padding: 94px 16px 58px;
+    align-items: start;
+  }
+
+  .textCard,
+  .statsCard {
+    width: 100%;
+    border-radius: 24px;
+    padding: 14px;
+  }
+
+  .textCard {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .statsCard {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .imageWrap {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 9 / 16;
+    align-self: center;
+  }
+
+  .imageFloat {
+    height: 100%;
+  }
+
+  .stats {
+    align-items: flex-start;
+  }
+
+  .statRow {
+    text-align: left;
+  }
+
+  .ring,
+  .ringInner {
+    display: none;
+  }
+
+  .panelVeil {
+    background:
+      radial-gradient(circle 180px at var(--px) var(--py), rgba(255,255,255,0.18), rgba(255,255,255,0) 62%),
+      rgba(6, 8, 11, 0.2);
+  }
+
+  .productLine {
+    top: -26px;
+    max-width: 92vw;
+    font-size: 8px;
+    letter-spacing: 2px;
+    padding-bottom: 6px;
+  }
+
+  .panelBrand {
+    bottom: -34px;
+  }
+
+  .panelBrandLogo {
+    height: 22px;
+  }
+
+  .imageHint {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    font-size: 7px;
+    letter-spacing: 2px;
+    padding: 6px 10px;
+  }
+
+  .modalCard {
+    grid-template-columns: 1fr;
+    max-height: 94vh;
+    padding-top: 48px;
+  }
+
+  .modalContent {
+    padding-top: 4px;
+  }
+
+  .jade {
+    position: static;
+    transform: none;
+    justify-content: center;
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+}
+
+@media (max-width: 767px) {
+  .content {
+    grid-template-columns: minmax(126px, 36vw) minmax(0, 1fr);
+    padding: 90px 12px 52px;
+  }
+
+  .textCard,
+  .statsCard {
+    padding: 12px;
+  }
+
+  .title {
+    font-size: clamp(18px, 5.5vw, 24px);
+    margin-bottom: 10px;
+  }
+
+  .body {
+    font-size: 12px;
+    line-height: 1.42;
+  }
+
+  .ingredient {
+    margin-top: 12px;
+    padding: 6px 10px;
+    letter-spacing: 2px;
+    font-size: 7px;
+  }
+
+  .productLine {
+    font-size: 7px;
+    letter-spacing: 1.5px;
+  }
+
+  .value {
+    font-size: clamp(16px, 5vw, 22px);
+  }
+
+  .label {
+    letter-spacing: 1.6px;
+  }
+}
+
+
+===== components/catalogue/botanicals/BotanicalVC.tsx =====
+export default function BotanicalVC(): JSX.Element {
+  return (
+    <svg
+      viewBox="0 0 1440 900"
+      preserveAspectRatio="xMidYMid slice"
+      shapeRendering="optimizeSpeed"
+      aria-hidden
+    >
+      <g>
+        <circle cx="1200" cy="450" r="320" fill="none" stroke="rgba(220,120,20,0.07)" strokeWidth="1.5" />
+        <circle cx="1200" cy="450" r="260" fill="none" stroke="rgba(220,120,20,0.05)" strokeWidth="1" />
+        <circle cx="1200" cy="450" r="200" fill="rgba(200,100,10,0.04)" stroke="rgba(220,120,20,0.08)" strokeWidth="1" />
+        <g stroke="rgba(220,120,20,0.09)" strokeWidth="1" fill="none">
+          <line x1="1200" y1="130" x2="1200" y2="770" /><line x1="880" y1="450" x2="1520" y2="450" />
+          <line x1="940" y1="190" x2="1460" y2="710" /><line x1="1460" y1="190" x2="940" y2="710" />
+          <line x1="895" y1="310" x2="1505" y2="590" /><line x1="895" y1="590" x2="1505" y2="310" />
+        </g>
+        <path d="M100 500 Q140 430 190 460 Q165 530 100 500Z" fill="rgba(40,90,20,0.07)" stroke="rgba(60,130,30,0.1)" strokeWidth="1" />
+        <path d="M70 545 Q110 465 168 496 Q143 562 70 545Z" fill="rgba(40,90,20,0.06)" stroke="rgba(60,130,30,0.08)" strokeWidth="1" />
+        <path d="M55 360 Q105 285 152 322 Q125 382 55 360Z" fill="rgba(40,90,20,0.06)" stroke="rgba(60,130,30,0.09)" strokeWidth="1" />
+        <g fill="rgba(255,180,50,0.3)">
+          <circle cx="350" cy="180" r="2.5" /><circle cx="185" cy="325" r="1.8" /><circle cx="425" cy="718" r="3" />
+          <circle cx="1055" cy="148" r="2" /><circle cx="1382" cy="352" r="2.5" /><circle cx="900" cy="802" r="2" />
+        </g>
+      </g>
+    </svg>
+  );
+}
+
+
+===== components/catalogue/botanicals/BotanicalAloe.tsx =====
+export default function BotanicalAloe(): JSX.Element {
+  return (
+    <svg
+      viewBox="0 0 1440 900"
+      preserveAspectRatio="xMidYMid slice"
+      shapeRendering="optimizeSpeed"
+      aria-hidden
+    >
+      <g>
+        <g transform="translate(1150,0)">
+          <path d="M150 900 Q145 750 148 650 Q151 570 150 500 Q149 430 150 350 Q151 270 148 180 Q146 120 150 60 Q154 120 152 180 Q149 270 150 350 Q151 430 150 500 Q149 570 151 650 Q154 750 150 900Z" fill="rgba(20,100,50,0.09)" stroke="rgba(40,160,80,0.13)" strokeWidth="1.5" />
+          <path d="M145 400 Q80 370 40 310 Q20 270 35 240 Q55 215 70 240 Q85 270 105 295 Q125 320 140 340 Q148 360 145 380Z" fill="rgba(20,90,45,0.1)" stroke="rgba(40,150,70,0.15)" strokeWidth="1" />
+          <path d="M155 350 Q220 320 265 260 Q285 220 272 192 Q252 167 237 192 Q222 222 202 247 Q182 272 162 295 Q154 315 155 340Z" fill="rgba(20,90,45,0.1)" stroke="rgba(40,150,70,0.15)" strokeWidth="1" />
+          <path d="M143 480 Q70 460 25 395 Q0 358 18 328 Q40 300 60 328 Q80 360 103 385 Q126 410 140 440 Q147 460 143 478Z" fill="rgba(20,90,45,0.09)" stroke="rgba(40,150,70,0.12)" strokeWidth="1" />
+        </g>
+        <g transform="translate(35,310)">
+          <path d="M60 590 Q56 495 58 425 Q60 355 60 285 Q60 215 58 155 Q56 98 60 50 Q64 98 62 155 Q60 215 60 285 Q60 355 62 425 Q64 495 60 590Z" fill="rgba(20,100,50,0.07)" stroke="rgba(40,160,80,0.1)" strokeWidth="1" />
+          <path d="M57 255 Q30 242 15 208 Q5 183 15 163 Q28 148 38 163 Q48 183 55 202 Q58 222 57 248Z" fill="rgba(20,90,45,0.07)" stroke="rgba(40,150,70,0.1)" strokeWidth="1" />
+          <path d="M63 238 Q92 222 108 188 Q118 163 108 143 Q95 128 85 143 Q75 163 68 185 Q62 208 63 232Z" fill="rgba(20,90,45,0.07)" stroke="rgba(40,150,70,0.1)" strokeWidth="1" />
+        </g>
+        <g fill="rgba(100,220,140,0.25)">
+          <circle cx="180" cy="182" r="2" /><circle cx="582" cy="302" r="2.5" />
+          <circle cx="802" cy="722" r="2" /><circle cx="1102" cy="202" r="3" />
+        </g>
+      </g>
+    </svg>
+  );
+}
+
+
+===== components/catalogue/botanicals/BotanicalHA.tsx =====
+export default function BotanicalHA(): JSX.Element {
+  return (
+    <svg
+      viewBox="0 0 1440 900"
+      preserveAspectRatio="xMidYMid slice"
+      shapeRendering="optimizeSpeed"
+      aria-hidden
+    >
+      <g>
+        <g transform="translate(1010,448)">
+          <path d="M0,-145 Q36,-62 32,0 Q36,62 0,105 Q-36,62 -32,0 Q-36,-62 0,-145Z" fill="rgba(220,215,235,0.06)" stroke="rgba(200,190,230,0.1)" strokeWidth="1" />
+          <g stroke="rgba(200,190,230,0.1)" strokeWidth="1" fill="rgba(200,190,230,0.04)">
+            <path d="M-30,-30 Q-82,-92 -57,-134 Q-26,-122 -30,-30Z" />
+            <path d="M30,-30 Q82,-92 57,-134 Q26,-122 30,-30Z" />
+            <path d="M-52,18 Q-124,-12 -134,-52 Q-92,-26 -52,18Z" />
+            <path d="M52,18 Q124,-12 134,-52 Q92,-26 52,18Z" />
+          </g>
+        </g>
+        <g fill="rgba(230,220,255,0.13)" stroke="rgba(200,190,255,0.16)" strokeWidth="1">
+          <ellipse cx="202" cy="140" rx="4" ry="10" /><ellipse cx="1302" cy="702" rx="3" ry="8" />
+          <ellipse cx="452" cy="102" rx="3" ry="7" /><ellipse cx="652" cy="752" rx="2.5" ry="6" />
+        </g>
+        <circle cx="162" cy="502" r="30" fill="rgba(10,8,20,0.65)" stroke="rgba(150,130,200,0.13)" strokeWidth="1" />
+        <circle cx="1352" cy="252" r="20" fill="rgba(10,8,20,0.55)" stroke="rgba(150,130,200,0.1)" strokeWidth="1" />
+        <g fill="rgba(220,210,255,0.28)">
+          <path d="M402 402 L404 394 L406 402 L404 410Z" />
+          <path d="M902 202 L904 194 L906 202 L904 210Z" />
+          <path d="M1202 602 L1204 595 L1206 602 L1204 609Z" />
+        </g>
+      </g>
+    </svg>
+  );
+}
+
+
+===== components/finale/Finale.tsx =====
+"use client";
+
+import Link from "next/link";
+import { motion } from "framer-motion";
+import styles from "./Finale.module.css";
+
+interface FinaleProps {
+  active: boolean;
+}
+
+export default function Finale({ active }: FinaleProps): JSX.Element {
+  return (
+    <section className={styles.finale} aria-labelledby="finale-title">
+      <svg
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
+        viewBox="0 0 1440 900"
+        aria-hidden
+      >
+        <circle cx="720" cy="450" r="380" fill="none" stroke="rgba(131,55,79,0.18)" strokeWidth="1" />
+        <circle
+          cx="720"
+          cy="450"
+          r="340"
+          fill="none"
+          stroke="rgba(176,108,130,0.14)"
+          strokeWidth="0.5"
+          strokeDasharray="5 10"
+        />
+        <circle cx="720" cy="450" r="300" fill="none" stroke="rgba(214,165,184,0.12)" strokeWidth="1" />
+        <g stroke="rgba(194,142,161,0.16)" strokeWidth="0.5">
+          <line x1="720" y1="70" x2="720" y2="830" />
+          <line x1="340" y1="450" x2="1100" y2="450" />
+          <line x1="451" y1="181" x2="989" y2="719" />
+          <line x1="989" y1="181" x2="451" y2="719" />
+        </g>
+      </svg>
+      <motion.p className={styles.subTop} initial={{ opacity: 0 }} animate={active ? { opacity: 1 } : { opacity: 0 }}>
+        Beauty. Trust. Results You Can Feel.
+      </motion.p>
+      <motion.h2
+        id="finale-title"
+        className={styles.title}
+        initial={{ opacity: 0, y: 40 }}
+        animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+        transition={{ duration: 1.2 }}
+      >
+        Your Skin, Our Promise
+      </motion.h2>
+      <motion.p
+        className={styles.sub}
+        initial={{ opacity: 0 }}
+        animate={active ? { opacity: 1 } : { opacity: 0 }}
+        transition={{ duration: 1.2, delay: 0.15 }}
+      >
+        Healthy-looking skin is our responsibility. Every formula is crafted to support comfort,
+        radiance, and a visibly refined glow day after day.
+      </motion.p>
+      <motion.div initial={{ opacity: 0 }} animate={active ? { opacity: 1 } : { opacity: 0 }} transition={{ delay: 0.3 }}>
+        <Link href="/our-story" className={styles.btn} aria-label="Read our story">
+          <span>Read Our Story</span>
+        </Link>
+      </motion.div>
+    </section>
+  );
+}
+
+
+===== components/finale/Finale.module.css =====
+.finale {
+  width: 100vw;
+  height: 100vh;
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  padding: 0 20px;
+}
+
+.finale::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 20% 56%, rgba(90, 26, 47, 0.24), transparent 58%),
+    radial-gradient(ellipse at 84% 20%, rgba(147, 83, 106, 0.14), transparent 52%);
+  z-index: 0;
+}
+
+.finale > * {
+  position: relative;
+  z-index: 1;
+}
+
+.title {
+  font-family: var(--font-im-fell), serif;
+  font-size: clamp(55px, 9vw, 140px);
+  letter-spacing: clamp(8px, 2vw, 30px);
+  color: var(--gold);
+  text-shadow: 0 0 70px rgba(170, 106, 129, 0.38);
+}
+
+.subTop {
+  font-size: 9px;
+  letter-spacing: 7px;
+  text-transform: uppercase;
+  color: rgba(237, 214, 223, 0.78);
+}
+
+.sub {
+  font-family: var(--font-cormorant), serif;
+  font-style: italic;
+  font-size: clamp(14px, 1.5vw, 22px);
+  color: rgba(246, 227, 235, 0.85);
+  margin: 20px 0 55px;
+  letter-spacing: 3px;
+  max-width: min(840px, 90vw);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 35px;
+  background: linear-gradient(135deg, rgba(148, 78, 104, 0.22), rgba(90, 26, 47, 0.18));
+  border: 1px solid rgba(219, 180, 194, 0.44);
+  border-radius: 100px;
+  color: #f1dde4;
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 10px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.btn:hover {
+  border-color: rgba(245, 217, 227, 0.72);
+  box-shadow: 0 0 34px rgba(130, 57, 82, 0.36);
+}
+
+@media (min-width: 768px) {
+  .btn {
+    padding: 18px 55px;
+  }
+}
+
+
+===== components/ui/Nav.tsx =====
+"use client";
+
+import Link from "next/link";
+import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
+import styles from "./Nav.module.css";
+
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { label: "Collection", href: "/catalogue" },
+  { label: "Our Story", href: "/our-story" },
+];
+
+export default function Nav(): JSX.Element {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <nav className={styles.nav} aria-label="Primary">
+      <Link className={styles.logo} href="/" aria-label="Verrdelle home">
+        <div className={styles.logoImgWrapper}>
+          <Image src="/images/ezma.svg" alt="Verrdelle" fill className={styles.logoImg} priority />
+        </div>
+      </Link>
+      <div className={styles.desktop}>
+        {NAV_ITEMS.map((item) => (
+          <Link key={item.label} href={item.href} className={styles.item} aria-label={item.label}>
+            {item.label}
+          </Link>
+        ))}
+      </div>
+      <button
+        className={styles.hamburger}
+        onClick={() => setIsOpen((value) => !value)}
+        aria-label={isOpen ? "Close menu" : "Open menu"}
+        aria-expanded={isOpen}
+        aria-controls="mobile-nav"
+        type="button"
+      >
+        {isOpen ? "X" : "Menu"}
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div id="mobile-nav" className={styles.drawer} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            {NAV_ITEMS.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={styles.drawerItem}
+                aria-label={item.label}
+                onClick={() => setIsOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
+  );
+}
+
+
+===== components/ui/Nav.module.css =====
+.nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 16px 14px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  z-index: 700;
+}
+
+.logo {
+  grid-column: 1;
+  justify-self: start;
+  display: flex;
+  align-items: center;
+}
+
+.logoImgWrapper {
+  position: relative;
+  width: clamp(110px, 24vw, 170px);
+  aspect-ratio: 3 / 1;
+}
+
+.logoImg {
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px var(--gold-dim));
+}
+
+.desktop {
+  grid-column: 3;
+  justify-self: end;
+  display: none;
+  align-items: center;
+  gap: 35px;
+}
+
+.item {
+  font-size: 9px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.item:hover {
+  color: var(--gold);
+}
+
+.shop {
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  padding: 9px 22px;
+  border-radius: 50px;
+}
+
+.hamburger {
+  grid-column: 2;
+  justify-self: center;
+  border: 1px solid var(--gold-dim);
+  border-radius: 999px;
+  color: var(--gold);
+  background: transparent;
+  width: 64px;
+  height: 44px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: rgba(5, 8, 10, 0.96);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 22px;
+  padding: 24px;
+}
+
+.drawerItem {
+  font-size: 14px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+}
+
+@media (min-width: 768px) {
+  .nav {
+    display: flex;
+    padding: 32px 50px;
+    justify-content: space-between;
+  }
+
+  .logoImgWrapper {
+    width: 190px;
+  }
+
+  .desktop {
+    display: flex;
+  }
+
+  .hamburger {
+    display: none;
+  }
+}
+
+
+===== components/cosmos/StarCanvas.tsx =====
+"use client";
+
+import { useEffect, useRef } from "react";
+import styles from "./StarCanvas.module.css";
+
+interface StarCanvasProps {
+  targetColor: [number, number, number];
+}
+
+export default function StarCanvas({ targetColor }: StarCanvasProps): JSX.Element {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    const [r, g, b] = targetColor;
+    ref.current.style.setProperty("--star-color", `${r}, ${g}, ${b}`);
+  }, [targetColor]);
+
+  return <div ref={ref} className={styles.stars} aria-hidden />;
+}
+
+
+===== components/cosmos/StarCanvas.module.css =====
+/* Zero JS animation â€” pure CSS static star field */
+/* Stars generated via box-shadow on a single ::before element */
+/* Color changes via CSS custom property + transition */
+
+.stars {
+  --star-color: 201, 168, 76;
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Layer 1 â€” small stars (1px) */
+.stars::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  /* 120 hand-distributed stars across the viewport */
+  box-shadow:
+    /* Top region */
+    8vw   4vh  0 0  rgba(var(--star-color), 0.55),
+    15vw  9vh  0 0  rgba(var(--star-color), 0.35),
+    23vw  2vh  0 0  rgba(var(--star-color), 0.45),
+    31vw  7vh  0 0  rgba(var(--star-color), 0.60),
+    38vw  3vh  0 0  rgba(var(--star-color), 0.30),
+    46vw  8vh  0 0  rgba(var(--star-color), 0.50),
+    54vw  2vh  0 0  rgba(var(--star-color), 0.40),
+    62vw  6vh  0 0  rgba(var(--star-color), 0.55),
+    70vw  4vh  0 0  rgba(var(--star-color), 0.35),
+    78vw  9vh  0 0  rgba(var(--star-color), 0.45),
+    86vw  3vh  0 0  rgba(var(--star-color), 0.60),
+    93vw  7vh  0 0  rgba(var(--star-color), 0.30),
+    /* Upper-mid region */
+    5vw   18vh 0 0  rgba(var(--star-color), 0.40),
+    12vw  14vh 0 0  rgba(var(--star-color), 0.55),
+    19vw  19vh 0 0  rgba(var(--star-color), 0.35),
+    27vw  13vh 0 0  rgba(var(--star-color), 0.45),
+    35vw  17vh 0 0  rgba(var(--star-color), 0.60),
+    43vw  12vh 0 0  rgba(var(--star-color), 0.30),
+    51vw  18vh 0 0  rgba(var(--star-color), 0.50),
+    59vw  14vh 0 0  rgba(var(--star-color), 0.40),
+    67vw  19vh 0 0  rgba(var(--star-color), 0.55),
+    75vw  13vh 0 0  rgba(var(--star-color), 0.35),
+    83vw  17vh 0 0  rgba(var(--star-color), 0.45),
+    91vw  12vh 0 0  rgba(var(--star-color), 0.60),
+    97vw  18vh 0 0  rgba(var(--star-color), 0.30),
+    /* Mid region */
+    3vw   28vh 0 0  rgba(var(--star-color), 0.50),
+    10vw  32vh 0 0  rgba(var(--star-color), 0.35),
+    17vw  27vh 0 0  rgba(var(--star-color), 0.55),
+    25vw  33vh 0 0  rgba(var(--star-color), 0.40),
+    33vw  28vh 0 0  rgba(var(--star-color), 0.45),
+    41vw  32vh 0 0  rgba(var(--star-color), 0.60),
+    49vw  27vh 0 0  rgba(var(--star-color), 0.30),
+    57vw  33vh 0 0  rgba(var(--star-color), 0.50),
+    65vw  28vh 0 0  rgba(var(--star-color), 0.40),
+    73vw  32vh 0 0  rgba(var(--star-color), 0.55),
+    81vw  27vh 0 0  rgba(var(--star-color), 0.35),
+    89vw  33vh 0 0  rgba(var(--star-color), 0.45),
+    96vw  28vh 0 0  rgba(var(--star-color), 0.60),
+    /* Lower-mid region */
+    6vw   43vh 0 0  rgba(var(--star-color), 0.30),
+    14vw  47vh 0 0  rgba(var(--star-color), 0.50),
+    22vw  42vh 0 0  rgba(var(--star-color), 0.40),
+    30vw  48vh 0 0  rgba(var(--star-color), 0.55),
+    38vw  43vh 0 0  rgba(var(--star-color), 0.35),
+    46vw  47vh 0 0  rgba(var(--star-color), 0.45),
+    54vw  42vh 0 0  rgba(var(--star-color), 0.60),
+    62vw  48vh 0 0  rgba(var(--star-color), 0.30),
+    70vw  43vh 0 0  rgba(var(--star-color), 0.50),
+    78vw  47vh 0 0  rgba(var(--star-color), 0.40),
+    86vw  42vh 0 0  rgba(var(--star-color), 0.55),
+    94vw  48vh 0 0  rgba(var(--star-color), 0.35),
+    /* Mid-lower */
+    2vw   57vh 0 0  rgba(var(--star-color), 0.45),
+    9vw   62vh 0 0  rgba(var(--star-color), 0.60),
+    16vw  57vh 0 0  rgba(var(--star-color), 0.30),
+    24vw  63vh 0 0  rgba(var(--star-color), 0.50),
+    32vw  58vh 0 0  rgba(var(--star-color), 0.40),
+    40vw  62vh 0 0  rgba(var(--star-color), 0.55),
+    48vw  57vh 0 0  rgba(var(--star-color), 0.35),
+    56vw  63vh 0 0  rgba(var(--star-color), 0.45),
+    64vw  58vh 0 0  rgba(var(--star-color), 0.60),
+    72vw  62vh 0 0  rgba(var(--star-color), 0.30),
+    80vw  57vh 0 0  rgba(var(--star-color), 0.50),
+    88vw  63vh 0 0  rgba(var(--star-color), 0.40),
+    95vw  58vh 0 0  rgba(var(--star-color), 0.55),
+    /* Lower region */
+    4vw   72vh 0 0  rgba(var(--star-color), 0.35),
+    11vw  77vh 0 0  rgba(var(--star-color), 0.45),
+    18vw  73vh 0 0  rgba(var(--star-color), 0.60),
+    26vw  78vh 0 0  rgba(var(--star-color), 0.30),
+    34vw  72vh 0 0  rgba(var(--star-color), 0.50),
+    42vw  77vh 0 0  rgba(var(--star-color), 0.40),
+    50vw  73vh 0 0  rgba(var(--star-color), 0.55),
+    58vw  78vh 0 0  rgba(var(--star-color), 0.35),
+    66vw  72vh 0 0  rgba(var(--star-color), 0.45),
+    74vw  77vh 0 0  rgba(var(--star-color), 0.60),
+    82vw  73vh 0 0  rgba(var(--star-color), 0.30),
+    90vw  78vh 0 0  rgba(var(--star-color), 0.50),
+    97vw  73vh 0 0  rgba(var(--star-color), 0.40),
+    /* Bottom region */
+    7vw   87vh 0 0  rgba(var(--star-color), 0.55),
+    13vw  92vh 0 0  rgba(var(--star-color), 0.35),
+    21vw  88vh 0 0  rgba(var(--star-color), 0.45),
+    29vw  93vh 0 0  rgba(var(--star-color), 0.60),
+    37vw  87vh 0 0  rgba(var(--star-color), 0.30),
+    45vw  92vh 0 0  rgba(var(--star-color), 0.50),
+    53vw  88vh 0 0  rgba(var(--star-color), 0.40),
+    61vw  93vh 0 0  rgba(var(--star-color), 0.55),
+    69vw  87vh 0 0  rgba(var(--star-color), 0.35),
+    77vw  92vh 0 0  rgba(var(--star-color), 0.45),
+    85vw  88vh 0 0  rgba(var(--star-color), 0.60),
+    92vw  93vh 0 0  rgba(var(--star-color), 0.30);
+  width: 1.5px;
+  height: 1.5px;
+  border-radius: 50%;
+  transition: box-shadow 1400ms ease;
+}
+
+/* Layer 2 â€” larger accent stars (2px) */
+.stars::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  box-shadow:
+    20vw  22vh 0 1px rgba(var(--star-color), 0.45),
+    47vw  11vh 0 1px rgba(var(--star-color), 0.35),
+    71vw  38vh 0 1px rgba(var(--star-color), 0.50),
+    88vw  55vh 0 1px rgba(var(--star-color), 0.40),
+    35vw  66vh 0 1px rgba(var(--star-color), 0.45),
+    12vw  81vh 0 1px rgba(var(--star-color), 0.35),
+    60vw  74vh 0 1px rgba(var(--star-color), 0.50),
+    93vw  17vh 0 1px rgba(var(--star-color), 0.40),
+    55vw  44vh 0 1px rgba(var(--star-color), 0.55),
+    28vw  89vh 0 1px rgba(var(--star-color), 0.35),
+    76vw  62vh 0 1px rgba(var(--star-color), 0.45),
+    4vw   51vh 0 1px rgba(var(--star-color), 0.40);
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  transition: box-shadow 1400ms ease;
+}
+
+/* Respect reduced motion â€” keep stars but skip any future transitions */
+@media (prefers-reduced-motion: reduce) {
+  .stars::before,
+  .stars::after {
+    transition: none;
+  }
+}
+
+
+===== lib/data/products.ts =====
+import { Product } from "@/types";
+
+export const products: Product[] = [
+  {
+    id: "panel-1",
+    prodId: "p1",
+    theme: "vc",
+    num: "01 - Vitamin C Oil Serum",
+    ghost: "Citrus",
+    title: "Vitamin C Oil\nRadiance Serum",
+    body: "A lightweight, fast-absorbing oil serum that helps brighten dull-looking skin, support a more even tone, and visibly soften the look of dark spots. It delivers deep nourishment while supporting surface renewal for a clear, healthy glow.",
+    ingredient: "Stabilized Vitamin C, Rosehip Oil, Squalane",
+    stats: [
+      { value: "12%", label: "Stabilized Vitamin C" },
+      { value: "2x", label: "Brighter-Look Boost" },
+      { value: "24h", label: "Nourishing Comfort" },
+    ],
+    seriesLabel: "Vitamin C Imperial Series",
+    image: "/images/1.png",
+  },
+  {
+    id: "panel-2",
+    prodId: "p2",
+    theme: "aloe",
+    num: "02 - Luxury Aloe Cleanser",
+    ghost: "Aloe",
+    title: "Luxury Aloe\nComfort Cleanser",
+    body: "Built on a high aloe water base and enriched with provitamin B5, vitamins E, A, and C, plus frankincense extract. It deeply cleanses without a tight after-feel, helps soothe and hydrate, supports clearer-looking pores, and promotes a brighter, more even appearance over time.",
+    ingredient: "Aloe Water, Pro-Vitamin B5, Frankincense Extract",
+    stats: [
+      { value: "70%", label: "Aloe Water Base" },
+      { value: "pH 5.5", label: "Comfort Cleanse Balance" },
+      { value: "4x", label: "Hydration Support Blend" },
+    ],
+    seriesLabel: "Aloe Imperial Series",
+    image: "/images/2.png",
+  },
+  {
+    id: "panel-3",
+    prodId: "p3",
+    theme: "ha",
+    num: "03 - Hyaluronic Concentrated Serum",
+    ghost: "Noir",
+    title: "Hyaluronic\nNoir Concentrate",
+    body: "A lightweight, fast-absorbing, non-greasy serum designed to draw water into the skin's mid layers for a plump, smooth feel. Multi-level hyaluronic technology supports bounce and elasticity, while vitamin B5 helps comfort the barrier and improve the look of texture and tone.",
+    ingredient: "Multi-Level HA, Vitamin B5, Silk Peptide",
+    stats: [
+      { value: "5x", label: "Hydration Magnet Complex" },
+      { value: "B5", label: "Barrier Comfort Support" },
+      { value: "24h", label: "Plump-Look Moisture" },
+    ],
+    seriesLabel: "Hyaluronic Imperial Series",
+    image: "/images/3.png",
+  },
+  {
+    id: "panel-4",
+    prodId: "p4",
+    theme: "goldButter",
+    num: "04 - Gold Body Butter",
+    ghost: "Velvet",
+    title: "Gold Body\nButter Cream",
+    body: "A rich, melt-in body butter crafted with refined shea, cocoa butter, avocado butter, and a nourishing vitamin blend. It wraps skin in long-lasting hydration and leaves a soft velvety finish without the heavy, sticky feel. The scent profile is fresh strawberry with clean milky cream.",
+    ingredient: "Refined Shea, Cocoa Butter, Avocado Butter",
+    stats: [
+      { value: "3", label: "Nutrient Butters" },
+      { value: "48h", label: "Moisture Veil Feel" },
+      { value: "0%", label: "Heavy Greasy Finish" },
+    ],
+    seriesLabel: "Body Ritual Imperial Series",
+    // TODO: Confirm final production render for /images/4.png.
+    image: "/images/1.png",
+  },
+  {
+    id: "panel-5",
+    prodId: "p5",
+    theme: "milk",
+    num: "05 - Face Milk",
+    ghost: "Pearl",
+    title: "Face Milk\nPearl Emulsion",
+    body: "An ultra-light milky emulsion with quick absorption and a pearly soft finish. Lactic-acid-derived hydration support helps reinforce the skin's natural moisture factors, while aloe vera water acts like a soothing hydration reservoir for calm, comfortable skin.",
+    ingredient: "Lactic Hydration Support, Aloe Vera Water, Oat Lipids",
+    stats: [
+      { value: "30s", label: "Quick Absorption Feel" },
+      { value: "NMF+", label: "Moisture Factor Support" },
+      { value: "12h", label: "Soft Pearl Comfort" },
+    ],
+    seriesLabel: "Milk Ritual Imperial Series",
+    // TODO: Confirm final production render for /images/5.png.
+    image: "/images/2.png",
+  },
+];
+
+
+===== lib/data/themes.ts =====
+import { ThemeName, ThemeToken } from "@/types";
+
+export const themes: Record<ThemeName, ThemeToken> = {
+  vc: {
+    c: [255, 198, 84],
+    gold: "#e0bb63",
+    gl: "#f7dfac",
+    bg: "radial-gradient(ellipse at 16% 52%,rgba(255,166,58,0.36),transparent 58%),radial-gradient(ellipse at 84% 24%,rgba(255,226,122,0.18),transparent 52%),linear-gradient(160deg,#170c04 0%,#6a330a 52%,#080707 100%)",
+    glow: "radial-gradient(circle,rgba(255,201,92,0.58),transparent 72%)",
+  },
+  aloe: {
+    c: [122, 208, 146],
+    gold: "#a3d987",
+    gl: "#dbf7c6",
+    bg: "radial-gradient(ellipse at 20% 58%,rgba(38,128,78,0.34),transparent 56%),radial-gradient(ellipse at 80% 24%,rgba(118,224,162,0.18),transparent 50%),linear-gradient(160deg,#03170d 0%,#145130 53%,#030d08 100%)",
+    glow: "radial-gradient(circle,rgba(115,216,152,0.56),transparent 70%)",
+  },
+  ha: {
+    c: [244, 236, 224],
+    gold: "#e1bf70",
+    gl: "#fff1d2",
+    bg: "radial-gradient(ellipse at 48% 46%,rgba(246,236,220,0.12),transparent 66%),radial-gradient(ellipse at 12% 78%,rgba(255,247,235,0.1),transparent 42%),linear-gradient(160deg,#050607 0%,#171c22 56%,#07090b 100%)",
+    glow: "radial-gradient(circle,rgba(246,236,224,0.42),transparent 72%)",
+  },
+  goldButter: {
+    c: [255, 186, 170],
+    gold: "#e3b779",
+    gl: "#ffeccd",
+    bg: "radial-gradient(ellipse at 18% 52%,rgba(248,156,146,0.28),transparent 56%),radial-gradient(ellipse at 82% 22%,rgba(255,245,228,0.2),transparent 52%),linear-gradient(160deg,#1a100f 0%,#623832 52%,#0d0a0a 100%)",
+    glow: "radial-gradient(circle,rgba(255,224,206,0.48),transparent 72%)",
+  },
+  milk: {
+    c: [240, 229, 212],
+    gold: "#dcc191",
+    gl: "#fff2db",
+    bg: "radial-gradient(ellipse at 22% 54%,rgba(246,236,218,0.16),transparent 58%),radial-gradient(ellipse at 82% 26%,rgba(255,250,238,0.14),transparent 50%),linear-gradient(160deg,#0b0c0f 0%,#21252a 56%,#0d0e10 100%)",
+    glow: "radial-gradient(circle,rgba(246,236,220,0.4),transparent 74%)",
+  },
+};
+
+
+===== lib/data/productCatalog.ts =====
+import { ProductId } from "@/types";
+
+export interface ProductCatalogDetails {
+  headline: string;
+  longDescription: string;
+  usage: string;
+  gallery: string[];
+}
+
+export const productCatalog: Record<ProductId, ProductCatalogDetails> = {
+  p1: {
+    headline: "Brightening Oil Ritual",
+    longDescription:
+      "A high-comfort vitamin C oil ritual designed for daily glow refinement. It supports a brighter appearance, smoother texture, and a healthier-looking tone while staying lightweight on skin.",
+    usage:
+      "Apply 2-3 drops on clean skin, morning or evening, then seal with moisturizer and daytime SPF.",
+    gallery: ["/images/1.png", "/images/2.png", "/images/3.png"],
+  },
+  p2: {
+    headline: "Comfort Purifying Cleanse",
+    longDescription:
+      "Aloe-forward cleanser built for deep cleansing without dryness. It supports hydrated comfort, helps refine the look of pores, and keeps skin feeling balanced after rinse-off.",
+    usage:
+      "Massage onto damp skin for 30-45 seconds, rinse with lukewarm water, then follow with hydrating care.",
+    gallery: ["/images/2.png", "/images/1.png", "/images/3.png"],
+  },
+  p3: {
+    headline: "Hydration Architecture Serum",
+    longDescription:
+      "A concentrated hyaluronic ritual with a non-greasy finish. It helps skin feel visibly plumper and smoother, while supporting a refined and more even-looking surface.",
+    usage:
+      "Use 1-2 pumps on slightly damp skin, press gently until absorbed, then layer your cream.",
+    gallery: ["/images/3.png", "/images/1.png", "/images/2.png"],
+  },
+  p4: {
+    headline: "Velvet Body Nutrition",
+    longDescription:
+      "A rich body butter that melts in with premium nourishment. It supports long-lasting moisture and a silky after-feel while keeping skin soft and elegant to the touch.",
+    usage:
+      "Warm between palms and glide over dry areas after showering for best comfort lock-in.",
+    // TODO: Switch first image to /images/4.png when finalized.
+    gallery: ["/images/1.png", "/images/2.png", "/images/3.png"],
+  },
+  p5: {
+    headline: "Milky Barrier Comfort",
+    longDescription:
+      "An ultra-light face milk with a pearly finish, created for calm hydration support. It helps skin feel cushioned, look smoother, and stay comfortably balanced all day.",
+    usage:
+      "Apply 1-2 pumps after serum. Use morning and evening as the final hydration layer.",
+    // TODO: Switch first image to /images/5.png when finalized.
+    gallery: ["/images/2.png", "/images/3.png", "/images/1.png"],
+  },
+};
+
+
+===== types/index.ts =====
+export type ThemeName = "vc" | "aloe" | "ha" | "goldButter" | "milk";
+export type ProductId = "p1" | "p2" | "p3" | "p4" | "p5";
+
+export interface ProductStat {
+  value: string;
+  label: string;
+}
+
+export interface Product {
+  id: string;
+  prodId: ProductId;
+  theme: ThemeName;
+  num: string;
+  ghost: string;
+  title: string;
+  body: string;
+  ingredient: string;
+  stats: ProductStat[];
+  seriesLabel: string;
+  image: string;
+}
+
+export interface ThemeToken {
+  c: [number, number, number];
+  gold: string;
+  gl: string;
+  bg: string;
+  glow: string;
+}
+
+export interface ParallaxOffset {
+  x: number;
+  y: number;
+}
+
+

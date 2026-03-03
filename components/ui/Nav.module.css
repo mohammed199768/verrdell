@@ -1,0 +1,191 @@
+.nav {
+  --nav-accent: var(--gold, #c9a84c);
+  --nav-accent-soft: var(--gold-light, #e8d5a3);
+  --nav-text: color-mix(in srgb, var(--nav-accent-soft) 86%, #ffffff 14%);
+  position: relative;
+  width: 100%;
+  padding: 8px 16px 8px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 6px;
+  border-bottom: none;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+  z-index: 20;
+}
+
+.nav::before {
+  content: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(246, 233, 239, 0.42), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.nav::after {
+  content: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.nav > * {
+  position: relative;
+  z-index: 1;
+}
+
+.logo {
+  grid-column: 1;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+}
+
+.logoImgWrapper {
+  position: relative;
+  width: clamp(108px, 26vw, 146px);
+  aspect-ratio: 3 / 1;
+}
+
+.logoImg {
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 18px color-mix(in srgb, var(--nav-accent) 38%, transparent))
+    drop-shadow(0 0 34px color-mix(in srgb, var(--nav-accent-soft) 22%, transparent));
+}
+
+.desktop {
+  grid-column: 3;
+  justify-self: end;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+}
+
+.item {
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 12px;
+  letter-spacing: 2.2px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--nav-text);
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition: color 0.24s, border-color 0.24s, background-color 0.24s, transform 0.24s;
+}
+
+.item:hover {
+  color: #ffffff;
+  border-color: color-mix(in srgb, var(--nav-accent-soft) 55%, transparent);
+  background: transparent;
+  transform: translateY(-1px);
+}
+
+.hamburger {
+  grid-column: 2;
+  justify-self: center;
+  border: 1px solid color-mix(in srgb, var(--nav-accent-soft) 40%, transparent);
+  border-radius: 999px;
+  color: var(--nav-text);
+  background: transparent;
+  min-width: 90px;
+  height: 40px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  cursor: pointer;
+  transition: border-color 0.24s, box-shadow 0.24s, background-color 0.24s;
+}
+
+.hamburger:hover {
+  border-color: color-mix(in srgb, var(--nav-accent-soft) 70%, transparent);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--nav-accent) 28%, transparent);
+}
+
+.hamburgerText {
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 8px;
+  letter-spacing: 2.7px;
+  text-transform: uppercase;
+}
+
+.hamburgerGlyph {
+  font-size: 10px;
+  line-height: 1;
+  color: var(--nav-accent-soft);
+}
+
+.drawer {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: calc(100% + 4px);
+  z-index: 30;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--nav-accent-soft) 35%, transparent);
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 12px;
+}
+
+.drawerItem {
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 15px;
+  letter-spacing: 2px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--nav-text);
+  text-decoration: none;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--nav-accent-soft) 26%, transparent);
+  background: transparent;
+  padding: 12px 14px;
+}
+
+@media (min-width: 768px) {
+  .nav {
+    padding: 10px clamp(24px, 4.5vw, 56px) 10px;
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .logoImgWrapper {
+    width: clamp(120px, 11vw, 156px);
+  }
+
+  .desktop {
+    display: flex;
+  }
+
+  .hamburger {
+    display: none;
+  }
+}
+

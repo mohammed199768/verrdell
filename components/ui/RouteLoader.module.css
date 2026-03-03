@@ -1,0 +1,72 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9400;
+  display: grid;
+  place-items: center;
+  pointer-events: all;
+  background:
+    radial-gradient(ellipse at 18% 56%, rgba(90, 26, 47, 0.32), transparent 58%),
+    radial-gradient(ellipse at 82% 18%, rgba(141, 74, 100, 0.16), transparent 54%),
+    linear-gradient(165deg, rgba(9, 7, 9, 0.92) 0%, rgba(33, 13, 23, 0.93) 56%, rgba(7, 6, 8, 0.94) 100%);
+}
+
+.center {
+  width: min(440px, 86vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.logoWrap {
+  position: relative;
+  width: clamp(180px, 36vw, 320px);
+  aspect-ratio: 3 / 1;
+}
+
+.logo {
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px color-mix(in srgb, var(--gold) 32%, transparent));
+}
+
+.text {
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 10px;
+  letter-spacing: 3.4px;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--gold-light) 88%, #ffffff 12%);
+  text-align: center;
+}
+
+.barTrack {
+  width: min(280px, 72vw);
+  height: 2px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--gold-light) 20%, transparent);
+  overflow: hidden;
+}
+
+.bar {
+  display: block;
+  width: 44%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--gold) 72%, #ffffff 28%), var(--gold-light));
+  animation: routeLoaderSlide 0.95s ease-in-out infinite;
+}
+
+@keyframes routeLoaderSlide {
+  0% {
+    transform: translateX(-130%);
+  }
+  100% {
+    transform: translateX(290%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    animation-duration: 1.8s;
+  }
+}

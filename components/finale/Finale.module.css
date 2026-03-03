@@ -1,0 +1,105 @@
+.finale {
+  width: 100vw;
+  height: 100vh;
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  padding: 0 20px;
+  font-family: var(--font-montserrat), sans-serif;
+}
+
+.finale::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 20% 56%, rgba(90, 26, 47, 0.24), transparent 58%),
+    radial-gradient(ellipse at 84% 20%, rgba(147, 83, 106, 0.14), transparent 52%);
+  z-index: 0;
+}
+
+.finale > * {
+  position: relative;
+  z-index: 1;
+}
+
+.title {
+  font-size: clamp(42px, 6.4vw, 86px);
+  font-weight: 500;
+  letter-spacing: clamp(3px, 0.8vw, 10px);
+  color: var(--gold);
+  text-shadow: 0 0 70px rgba(170, 106, 129, 0.38);
+}
+
+.subTop {
+  font-size: 9px;
+  letter-spacing: 7px;
+  text-transform: uppercase;
+  color: rgba(237, 214, 223, 0.78);
+}
+
+.sub {
+  font-size: clamp(14px, 1.5vw, 22px);
+  font-weight: 400;
+  color: rgba(246, 227, 235, 0.85);
+  margin: 20px 0 55px;
+  letter-spacing: 1.6px;
+  max-width: min(840px, 90vw);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 35px;
+  background: linear-gradient(135deg, rgba(148, 78, 104, 0.22), rgba(90, 26, 47, 0.18));
+  border: 1px solid rgba(219, 180, 194, 0.44);
+  border-radius: 100px;
+  color: #f1dde4;
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 10px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.btn:hover {
+  border-color: rgba(245, 217, 227, 0.72);
+  box-shadow: 0 0 34px rgba(130, 57, 82, 0.36);
+}
+
+@media (min-width: 768px) {
+  .btn {
+    padding: 18px 55px;
+  }
+}
+
+@media (max-width: 1279px) {
+  .finale {
+    padding: 0 32px;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 767px) {
+  .finale {
+    padding: 0 24px;
+    gap: 16px;
+  }
+
+  .title {
+    font-size: clamp(28px, 8vw, 44px);
+  }
+
+  .sub {
+    font-size: clamp(14px, 3.8vw, 18px);
+    line-height: 1.55;
+  }
+}

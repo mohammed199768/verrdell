@@ -1,0 +1,957 @@
+.panel {
+  --px: 50%;
+  --py: 50%;
+  font-family: var(--font-montserrat), sans-serif;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ── Backgrounds ── */
+.panelBg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.panelVeil {
+  display: none;
+}
+
+.vcBg {
+  background:
+    radial-gradient(ellipse at 15% 50%, rgba(220,110,10,0.18), transparent 55%),
+    radial-gradient(ellipse at 85% 30%, rgba(255,180,40,0.12), transparent 50%);
+}
+
+.aloeBg {
+  background:
+    radial-gradient(ellipse at 20% 60%, rgba(20,100,55,0.22), transparent 55%),
+    radial-gradient(ellipse at 80% 25%, rgba(60,180,100,0.1), transparent 50%);
+}
+
+.haBg {
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(232,223,210,0.08), transparent 68%),
+    radial-gradient(ellipse at 10% 80%, rgba(255,246,235,0.05), transparent 42%);
+}
+
+.goldButterBg {
+  background:
+    radial-gradient(ellipse at 18% 56%, rgba(240,142,122,0.2), transparent 56%),
+    radial-gradient(ellipse at 82% 24%, rgba(255,241,220,0.14), transparent 52%);
+}
+
+.milkBg {
+  background:
+    radial-gradient(ellipse at 20% 58%, rgba(235,224,205,0.14), transparent 58%),
+    radial-gradient(ellipse at 78% 24%, rgba(255,247,235,0.11), transparent 50%);
+}
+
+/* ── Botanical SVG layer ── */
+.panel > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Decorative rings — GPU compositor ── */
+.ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(56vw, 760px);
+  height: min(56vw, 760px);
+  border-radius: 999px;
+  border: 1px solid rgba(232, 213, 163, 0.18);
+  pointer-events: none;
+  z-index: 1;
+  will-change: transform;
+}
+
+/* Static glow — doesn't animate, painted once and cached */
+.ring::before {
+  content: "";
+  position: absolute;
+  inset: -60px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 90px rgba(232,213,163,0.06), 0 0 100px rgba(201,168,76,0.08);
+  pointer-events: none;
+}
+
+.ringInner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(42vw, 560px);
+  height: min(42vw, 560px);
+  border-radius: 999px;
+  border: 1px dashed rgba(232, 213, 163, 0.24);
+  pointer-events: none;
+  z-index: 1;
+  will-change: transform;
+}
+
+/* ── Content layout ── */
+.content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(40px, 6vw, 120px);
+  width: 100%;
+  max-width: 1400px;
+  padding: 0 clamp(24px, 4vw, 80px);
+}
+
+/* ── Text card (no backdrop-filter) ── */
+.textCard {
+  width: min(460px, 33vw);
+  border-radius: 38% 62% 52% 48% / 42% 38% 62% 58%;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background:
+    radial-gradient(circle at 20% 18%, rgba(255, 255, 255, 0.13), transparent 52%),
+    linear-gradient(155deg, rgba(255, 255, 255, 0.09), rgba(8, 9, 11, 0.72));
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  padding: clamp(20px, 2vw, 34px) clamp(22px, 2.2vw, 36px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* ── Stats card (no backdrop-filter) ── */
+.statsCard {
+  width: min(460px, 33vw);
+  border-radius: 56% 44% 40% 60% / 52% 58% 42% 48%;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background:
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.11), transparent 50%),
+    linear-gradient(155deg, rgba(255, 255, 255, 0.07), rgba(8, 9, 11, 0.75));
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.18);
+  padding: clamp(20px, 2vw, 34px) clamp(22px, 2.2vw, 36px);
+}
+
+/* ── Image area ── */
+.imageWrap {
+  position: relative;
+  flex-shrink: 0;
+  z-index: 12;
+  width: clamp(190px, 22vw, 340px);
+  height: clamp(340px, 38vw, 620px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.productLine {
+  --line-base-transform: translateX(-50%);
+  position: absolute;
+  top: -34px;
+  left: 50%;
+  transform: var(--line-base-transform) scaleX(0);
+  transform-origin: left center;
+  width: min(440px, 32vw);
+  max-width: none;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.82);
+  text-shadow: 0 0 22px rgba(255,255,255,0.16);
+  border-bottom: 1px solid rgba(255,255,255,0.22);
+  padding-bottom: 8px;
+  animation: productTyping 1.5s ease-out 0.2s forwards;
+  pointer-events: none;
+}
+
+/* Static shadow — painted once, cached */
+.imageShadow {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  filter: blur(20px);
+}
+
+.imageFloat {
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+  animation: imageBob 5.5s ease-in-out 1;
+}
+
+.imageButton {
+  --mx: 50%;
+  --my: 50%;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  border-radius: 24px;
+  cursor: pointer;
+  padding: 0;
+  overflow: hidden;
+}
+
+.imageButton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  transition: opacity 0.25s ease;
+  z-index: 2;
+}
+
+.imageButton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle 140px at var(--mx) var(--my), rgba(255,255,255,0.28), rgba(255,255,255,0) 62%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.imageHint {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translate(-50%, 10px);
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.26);
+  background: rgba(8, 10, 12, 0.52);
+  color: rgba(255,255,255,0.88);
+  font-size: 8px;
+  letter-spacing: 2.8px;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  opacity: 0;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  z-index: 4;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.imageButton:hover::after,
+.imageButton:focus-visible::after {
+  opacity: 1;
+}
+
+.imageButton:hover .imageHint,
+.imageButton:focus-visible .imageHint {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.imageButton:focus-visible {
+  outline: 1px solid var(--gold-light);
+  outline-offset: 2px;
+}
+
+@keyframes imageBob {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-18px) rotate(1.5deg); }
+}
+
+.productImg {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.panelBrand {
+  position: absolute;
+  bottom: -58px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  opacity: 0.68;
+}
+
+.panelBrandLogo {
+  width: auto;
+  height: 28px;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(5, 8, 12, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modalCard {
+  position: relative;
+  width: min(980px, 88vw);
+  max-height: min(86vh, 760px);
+  overflow: auto;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255,255,255,0.09), transparent 52%),
+    linear-gradient(160deg, rgba(16, 18, 23, 0.95), rgba(10, 12, 14, 0.96));
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+  display: grid;
+  grid-template-columns: minmax(300px, 44%) minmax(300px, 56%);
+  gap: clamp(14px, 1.6vw, 22px);
+  padding: clamp(16px, 1.6vw, 24px);
+}
+
+.modalClose {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 999px;
+  background: rgba(10, 12, 16, 0.58);
+  color: var(--gold-light);
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.modalMedia {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modalMainImageWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255,255,255,0.12), transparent 58%),
+    rgba(7, 10, 14, 0.72);
+  overflow: hidden;
+}
+
+.modalMainImage {
+  object-fit: contain;
+}
+
+.modalThumbRow {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.modalThumb {
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  background: rgba(9, 11, 15, 0.7);
+  padding: 0;
+  width: 72px;
+  height: 72px;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.modalThumbActive {
+  border-color: var(--gold-light);
+}
+
+.modalThumbImageWrap {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.modalThumbImage {
+  object-fit: contain;
+}
+
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 24px;
+}
+
+.modalNum {
+  font-size: 8px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.84;
+}
+
+.modalTitle {
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: clamp(24px, 2.6vw, 42px);
+  font-weight: 600;
+  line-height: 1.05;
+  color: var(--gold-light);
+}
+
+.modalHeadline {
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: clamp(17px, 1.8vw, 24px);
+  font-weight: 500;
+  color: rgba(255,255,255,0.88);
+}
+
+.modalBody,
+.modalLongDescription,
+.modalUsage {
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: clamp(15px, 1.35vw, 19px);
+  font-weight: 400;
+  line-height: 1.58;
+  color: var(--muted);
+}
+
+.modalIngredient {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  border: 1px solid var(--gold-dim);
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-size: 8px;
+  letter-spacing: 2.8px;
+  text-transform: uppercase;
+  color: var(--gold);
+  width: fit-content;
+}
+
+.modalStats {
+  margin-top: 4px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.modalStat {
+  min-width: 92px;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 12px;
+  padding: 8px 10px;
+  background: rgba(8, 11, 14, 0.45);
+}
+
+.modalStatValue {
+  display: block;
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--gold-light);
+}
+
+.modalStatLabel {
+  display: block;
+  margin-top: 3px;
+  font-size: 8px;
+  letter-spacing: 2.2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+}
+
+/* ── Typography ── */
+.ghost {
+  font-family: var(--font-montserrat), sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: clamp(52px, 4.8vw, 84px);
+  color: rgba(255,255,255,0.06);
+  display: block;
+  line-height: 0.94;
+  margin-bottom: -10px;
+  letter-spacing: -1px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.num {
+  font-size: clamp(8px, 0.7vw, 10px);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.78;
+  display: block;
+  margin-bottom: 12px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.title {
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: clamp(22px, 2.2vw, 36px);
+  font-weight: 600;
+  color: var(--gold-light);
+  letter-spacing: 1.6px;
+  line-height: 1.18;
+  margin-bottom: 14px;
+  white-space: pre-line;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.body {
+  font-family: var(--font-montserrat), sans-serif;
+  font-weight: 400;
+  font-size: clamp(12px, 0.95vw, 15px);
+  line-height: 1.45;
+  color: var(--muted);
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.ingredient {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  font-size: 7px;
+  letter-spacing: 2.8px;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  padding: 9px 18px;
+  border-radius: 50px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.ingredient::before {
+  content: "◆";
+  font-size: 5px;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+  width: 100%;
+}
+
+.statRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  text-align: center;
+}
+
+.value {
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: clamp(20px, 2.1vw, 32px);
+  font-weight: 600;
+  color: var(--gold-light);
+  line-height: 1;
+}
+
+.label {
+  font-size: 7px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.38);
+}
+
+@keyframes productTyping {
+  to {
+    transform: var(--line-base-transform) scaleX(1);
+  }
+}
+
+/* ── Bottom series label ── */
+.jade {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  z-index: 3;
+}
+
+.jade span {
+  font-size: 8px;
+  letter-spacing: 6px;
+  color: rgba(255,255,255,0.2);
+}
+
+.jade::before,
+.jade::after {
+  content: "";
+  width: 60px;
+  height: 1px;
+  display: block;
+  background: linear-gradient(90deg, transparent, var(--gold-dim));
+}
+
+.jade::after {
+  transform: scaleX(-1);
+}
+
+.mobileStats {
+  display: none;
+}
+
+.mobileStatItem {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* ── Tablet (600px – 1279px) ── */
+@media (max-width: 1279px) {
+  .ring,
+  .ringInner {
+    display: none;
+  }
+
+  .panelVeil {
+    background:
+      radial-gradient(circle 180px at var(--px) var(--py), rgba(255,255,255,0.18), rgba(255,255,255,0) 62%),
+      rgba(6, 8, 11, 0.2);
+  }
+
+  .imageHint {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    font-size: 7px;
+    letter-spacing: 2px;
+    padding: 6px 10px;
+  }
+
+  .modalCard {
+    grid-template-columns: 1fr;
+    max-height: 94vh;
+    padding-top: 48px;
+  }
+
+  .modalContent {
+    padding-top: 4px;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 1279px) {
+  .content {
+    display: grid;
+    grid-template-columns: minmax(220px, 42vw) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    gap: 14px;
+    padding: 80px 20px 50px;
+    align-items: start;
+    align-content: center;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .textCard,
+  .statsCard {
+    width: 100%;
+    border-radius: 20px;
+    padding: 16px 18px;
+  }
+
+  .textCard {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .statsCard {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .imageWrap {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 5 / 8;
+    align-self: center;
+  }
+
+  .imageFloat {
+    height: 100%;
+  }
+
+  .stats {
+    align-items: center;
+  }
+
+  .statRow {
+    align-items: center;
+    text-align: center;
+  }
+
+  .ghost {
+    font-size: clamp(50px, 5vw, 75px);
+    margin-bottom: -12px;
+  }
+
+  .productLine {
+    top: -26px;
+    width: min(360px, 48vw);
+    font-size: 8px;
+    letter-spacing: 2px;
+    padding-bottom: 6px;
+  }
+
+  .panelBrand {
+    bottom: -34px;
+  }
+
+  .panelBrandLogo {
+    height: 22px;
+  }
+
+  .jade {
+    position: static;
+    transform: none;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 8px;
+  }
+}
+
+/* ── Phone (max-width: 599px) — VERTICAL STACK ── */
+@media (max-width: 599px) {
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+    padding: 72px 16px 24px;
+    width: 100%;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+
+  .imageWrap {
+    order: 1;
+    width: min(74vw, 300px);
+    height: auto;
+    aspect-ratio: 2 / 3;
+    align-self: center;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .imageFloat {
+    height: 100%;
+  }
+
+  .textCard {
+    order: 2;
+    width: 100%;
+    max-width: min(92vw, 520px);
+    min-height: 240px;
+    border-radius: 16px;
+    padding: 18px 18px 20px;
+  }
+
+  .statsCard {
+    display: none;
+  }
+
+  .mobileStats {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+
+  .mobileStatItem .value {
+    font-size: clamp(14px, 4vw, 18px);
+    line-height: 1;
+    color: var(--gold-light);
+  }
+
+  .mobileStatItem .label {
+    font-size: 6px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.38);
+  }
+
+  .jade {
+    display: none;
+  }
+
+  .ghost {
+    font-size: clamp(44px, 12vw, 62px);
+    margin-bottom: -8px;
+  }
+
+  .title {
+    font-size: clamp(20px, 5.5vw, 26px);
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+  }
+
+  .body {
+    font-size: 13px;
+    line-height: 1.45;
+    max-width: 100%;
+  }
+
+  .ingredient {
+    margin-top: 12px;
+    padding: 6px 10px;
+    letter-spacing: 2px;
+    font-size: 7px;
+  }
+
+  .stats {
+    align-items: center;
+  }
+
+  .statRow {
+    align-items: center;
+    text-align: center;
+  }
+
+  .value {
+    font-size: clamp(18px, 5vw, 24px);
+  }
+
+  .label {
+    letter-spacing: 1.6px;
+  }
+
+  .productLine {
+    display: none;
+  }
+
+  .panelBrand {
+    bottom: -28px;
+  }
+
+  .panelBrandLogo {
+    height: 20px;
+  }
+
+  .ring,
+  .ringInner {
+    display: none;
+  }
+}
+
+/* ── Modal — phone ── */
+@media (max-width: 767px) {
+  .jade {
+    display: none;
+  }
+
+  .modalOverlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modalCard {
+    width: 100vw;
+    max-height: 90dvh;
+    border-radius: 24px 24px 0 0;
+    padding: 48px 16px 32px;
+    grid-template-columns: 1fr;
+  }
+
+  .modalContent {
+    padding-top: 4px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .content {
+    overflow: visible;
+  }
+
+  .textCard,
+  .statsCard {
+    position: relative;
+    z-index: 8;
+  }
+
+  .imageWrap {
+    z-index: 80;
+  }
+
+  .imageFloat,
+  .imageButton,
+  .productImg {
+    position: relative;
+    z-index: 81;
+  }
+
+  .productLine {
+    --line-base-transform: translateX(0);
+    left: calc(100% + 18px);
+    top: clamp(8px, 1.8vh, 22px);
+    width: min(380px, 24vw);
+    text-align: left;
+    letter-spacing: 3px;
+    font-size: 9px;
+  }
+
+  .p3WrapBoost {
+    width: clamp(225px, 25vw, 400px);
+    height: clamp(390px, 43vw, 700px);
+  }
+
+  .p4WrapBoost {
+    width: clamp(235px, 26vw, 420px);
+    height: clamp(405px, 44vw, 720px);
+  }
+
+  .p5WrapBoost {
+    width: clamp(220px, 24.5vw, 390px);
+    height: clamp(385px, 42vw, 680px);
+  }
+}

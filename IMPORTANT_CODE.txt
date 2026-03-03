@@ -1,0 +1,2567 @@
+﻿VERRDELLE - IMPORTANT CODE & SITE MECHANISM
+==========================================
+Generated on: 2026-03-02
+
+[Ø´Ø±Ø­ Ø¢Ù„ÙŠØ© Ø§Ù„Ù…ÙˆÙ‚Ø¹]
+- Ù†ÙˆØ¹ Ø§Ù„Ù…Ø´Ø±ÙˆØ¹: Next.js App Router + TypeScript + Tailwind + CSS Modules + Framer Motion + Zustand.
+- Ø§Ù„ØµÙØ­Ø§Øª Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©:
+  1) /  => ØµÙØ­Ø© Hero Ø³ÙŠÙ†Ù…Ø§Ø¦ÙŠØ© (Loader + Ù†Ø¬ÙˆÙ… + CTA).
+  2) /catalogue => ÙƒØªØ§Ù„ÙˆØ¬ Ø£ÙÙ‚ÙŠ (Horizontal Snap Panels) Ù„Ø¹Ø±Ø¶ Ø§Ù„Ù…Ù†ØªØ¬Ø§Øª.
+
+- Ù…Ø³Ø§Ø± Ø§Ù„ØªÙ†ÙÙŠØ° (Flow) Ù…Ù† Ø§Ù„Ø¨Ø¯Ø§ÙŠØ© Ù„Ù„Ù†Ù‡Ø§ÙŠØ©:
+  1) Root Layout (app/layout.tsx):
+     - ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø®Ø·ÙˆØ· ÙˆØ¶Ø¨Ø· metadata SEO.
+     - ØªØºÙ„ÙŠÙ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ Ø¨Ù€ LenisProvider.
+     - Ø­Ù‚Ù† Cursor Ù…Ø®ØµØµ + ProgressBar Ø£Ø¹Ù„Ù‰ Ø§Ù„ØµÙØ­Ø©.
+  2) Ø§Ù„ØµÙØ­Ø© Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ© (app/page.tsx -> HeroPage):
+     - ÙŠØ¹Ø±Ø¶ Loader Ø£ÙˆÙ„Ø§.
+     - Ø¹Ù†Ø¯ Ø§Ù†ØªÙ‡Ø§Ø¡ Loader ÙŠØªÙ… ØªÙØ¹ÙŠÙ„ isLoaded ÙÙŠ Zustand.
+     - Ø¹Ù†Ø§ØµØ± Hero (Ø§Ù„Ø¹Ù†ÙˆØ§Ù†/Ø§Ù„ÙˆØµÙ/Ø§Ù„Ø²Ø±) ØªØ¸Ù‡Ø± Ø¨Ø­Ø±ÙƒØ§Øª Framer Motion.
+  3) Ø§Ù„Ø§Ù†ØªÙ‚Ø§Ù„ Ø¥Ù„Ù‰ Ø§Ù„ÙƒØªØ§Ù„ÙˆØ¬ (/catalogue):
+     - Nav + StarCanvas + CatalogueTrack.
+     - ÙƒÙ„ Ù…Ù†ØªØ¬ Ø¯Ø§Ø®Ù„ Panel Ù…Ø³ØªÙ‚Ù„.
+     - ÙŠÙˆØ¬Ø¯ Panel Ø£Ø®ÙŠØ± Finale.
+  4) Ù…ØªØ§Ø¨Ø¹Ø© Ø§Ù„Ù„ÙˆØ­Ø© Ø§Ù„Ù†Ø´Ø·Ø©:
+     - CatalogueTrack ÙŠØ³ØªØ®Ø¯Ù… IntersectionObserver Ø¯Ø§Ø®Ù„ Ù…Ø³Ø§Ø± Ø§Ù„ØªÙ…Ø±ÙŠØ± Ø§Ù„Ø£ÙÙ‚ÙŠ.
+     - Ø¹Ù†Ø¯ ØªØºÙŠØ± Ø§Ù„Ù„ÙˆØ­Ø©: ÙŠØªÙ… ØªØ­Ø¯ÙŠØ« activeIndex Ø£Ùˆ ØªÙØ¹ÙŠÙ„ isFinale.
+  5) Ù†Ø¸Ø§Ù… Ø§Ù„Ø«ÙŠÙ…Ø§Øª:
+     - CataloguePage ÙŠÙ‚Ø±Ø£ theme Ø§Ù„Ù…Ù†ØªØ¬ Ø§Ù„Ø­Ø§Ù„ÙŠ Ù…Ù† products.ts.
+     - ÙŠØ·Ø¨Ù‚ theme tokens Ù…Ù† themes.ts Ø¹Ù„Ù‰ CSS Variables + Ø®Ù„ÙÙŠØ© body.
+     - StarCanvas ÙŠØºÙŠØ± Ù„ÙˆÙ† Ø§Ù„Ù†Ø¬ÙˆÙ… ØªØ¯Ø±ÙŠØ¬ÙŠØ§ Ù†Ø­Ùˆ Ù„ÙˆÙ† Ø§Ù„Ø«ÙŠÙ… Ø§Ù„Ø­Ø§Ù„ÙŠ (lerpColor).
+  6) ProgressBar:
+     - ÙŠØ¹Ù…Ù„ ÙÙ‚Ø· Ø¯Ø§Ø®Ù„ /catalogue.
+     - ÙŠÙ‚ÙŠØ³ Ù†Ø³Ø¨Ø© scrollLeft/scrollWidth ÙˆÙŠØ­ÙˆÙ„Ù‡Ø§ Ù„Ø´Ø±ÙŠØ· ØªÙ‚Ø¯Ù… Ø¹Ù„ÙˆÙŠ.
+  7) Ø§Ù„ØªÙ…Ø±ÙŠØ±:
+     - Ø®Ø§Ø±Ø¬ Ø§Ù„ÙƒØªØ§Ù„ÙˆØ¬: Lenis Ù…ÙØ¹Ù„ Ù„Ø³Ù„Ø§Ø³Ø© Ø§Ù„ØªÙ…Ø±ÙŠØ±.
+     - Ø¯Ø§Ø®Ù„ Ø§Ù„ÙƒØªØ§Ù„ÙˆØ¬: Lenis Ù…Ø¹Ø·Ù„ØŒ ÙˆÙŠØªÙ… Ø§Ù„Ø§Ø¹ØªÙ…Ø§Ø¯ Ø¹Ù„Ù‰ CSS scroll snap + scroll Ø£ÙÙ‚ÙŠ Ø£ØµÙ„ÙŠ.
+  8) Ø§Ù„Ø§Ø³ØªÙ…Ø±Ø§Ø±ÙŠØ©:
+     - CatalogueTrack ÙŠØ®Ø²Ù† scrollLeft ÙÙŠ sessionStorage ÙˆÙŠØ³ØªØ±Ø¬Ø¹Ù‡ Ø¹Ù†Ø¯ Ø§Ù„Ø¹ÙˆØ¯Ø©.
+
+- Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª:
+  - products.ts: ÙƒÙ„ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ù…Ù†ØªØ¬Ø§Øª (Ø§Ù„Ø¹Ù†ÙˆØ§Ù†ØŒ Ø§Ù„Ù†ØµØŒ Ø§Ù„Ø¥Ø­ØµØ§Ø¦ÙŠØ§ØªØŒ Ø§Ù„ØµÙˆØ±Ø©ØŒ theme).
+  - themes.ts: Ø£Ù„ÙˆØ§Ù†/Ø®Ù„ÙÙŠØ§Øª/Glow Ù„ÙƒÙ„ Theme (vc, aloe, ha).
+  - types/index.ts: Ø§Ù„Ø¹Ù‚ÙˆØ¯ (Product, ThemeToken, ThemeName...) Ø§Ù„ØªÙŠ ØªØ±Ø¨Ø· ÙƒÙ„ Ø§Ù„Ø·Ø¨Ù‚Ø§Øª.
+
+- Ù…Ù„Ø§Ø­Ø¸Ø§Øª Ø§Ù„Ø£Ø¯Ø§Ø¡ ÙˆØ§Ù„Ù€ UX:
+  - preload Ù„Ø£ÙˆÙ„ ØµÙˆØ±Ø© Ø§Ù„ÙƒØªØ§Ù„ÙˆØ¬ ÙÙŠ app/catalogue/layout.tsx.
+  - Ø£ÙˆÙ„ÙˆÙŠØ© ØªØ­Ù…ÙŠÙ„ ØµÙˆØ±Ø© Ø§Ù„Ù…Ù†ØªØ¬ Ø§Ù„Ø£ÙˆÙ„ (priority + eager).
+  - ØªÙ‚Ù„ÙŠÙ„ Ø­Ù…Ù„ Ø§Ù„Ø±Ø³Ù… ÙÙŠ StarCanvas Ø¥Ù„Ù‰ ~30fps.
+  - Ø§Ø­ØªØ±Ø§Ù… prefers-reduced-motion ÙÙŠ Loader ÙˆØ§Ù„Ø­Ø±ÙƒØ§Øª Ø§Ù„Ø¹Ø§Ù…Ø©.
+  - custom cursor ÙŠØªØ¹Ø·Ù„ ØªÙ„Ù‚Ø§Ø¦ÙŠØ§ ÙÙŠ Ø§Ù„Ø£Ø¬Ù‡Ø²Ø© Ø§Ù„Ù„Ù…Ø³ÙŠØ© Ø¹Ø¨Ø± CSS.
+
+- ÙƒÙŠÙÙŠØ© ØªØ¹Ø¯ÙŠÙ„ Ø§Ù„Ù…ÙˆÙ‚Ø¹ Ø¨Ø³Ø±Ø¹Ø©:
+  1) Ù„Ø¥Ø¶Ø§ÙØ© Ù…Ù†ØªØ¬ Ø¬Ø¯ÙŠØ¯: Ø¹Ø¯Ù„ products.ts + Ø£Ø¶Ù Ø§Ù„ØµÙˆØ±Ø© ÙÙŠ public/images.
+  2) Ù„ØªØºÙŠÙŠØ± Ø§Ù„Ù‡ÙˆÙŠØ© Ø§Ù„Ù„ÙˆÙ†ÙŠØ©: Ø¹Ø¯Ù„ themes.ts (gold/bg/glow/c).
+  3) Ù„ØªØ¹Ø¯ÙŠÙ„ Ø§Ù„Ø³Ù„ÙˆÙƒ Ø§Ù„Ø­Ø±ÙƒÙŠ: Ø±Ø§Ø¬Ø¹ HeroPage.tsx ÙˆFinale.tsx ÙˆStarCanvas.tsx.
+  4) Ù„ØªØ¹Ø¯ÙŠÙ„ Ù…Ù†Ø·Ù‚ Ø§Ù„ØªÙ…Ø±ÙŠØ± ÙˆØ§Ù„ØªÙ‚Ø§Ø· Ø§Ù„Ù„ÙˆØ­Ø§Øª: CatalogueTrack.tsx.
+
+[ØªØ¬Ù…ÙŠØ¹ Ø§Ù„Ø£ÙƒÙˆØ§Ø¯ Ø§Ù„Ù…Ù‡Ù…Ø©]
+
+============================================================
+FILE: package.json
+------------------------------------------------------------
+```json
+{
+  "name": "verrdelle",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,css,md}": [
+      "prettier --write"
+    ],
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix"
+    ]
+  },
+  "dependencies": {
+    "clsx": "2.1.0",
+    "framer-motion": "11.0.0",
+    "lenis": "1.1.0",
+    "next": "14.2.0",
+    "react": "18.3.0",
+    "react-dom": "18.3.0",
+    "tailwind-merge": "2.3.0",
+    "zustand": "4.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "20",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "10.4.0",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.0",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.3.1",
+    "postcss": "8.4.0",
+    "prettier": "3.2.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5"
+  }
+}
+
+```
+
+============================================================
+FILE: next.config.mjs
+------------------------------------------------------------
+```mjs
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    // In production: images cached 30 days after first generation
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
+
+    // Exact sizes matching our layout â€” avoids generating extra variants
+    deviceSizes: [384, 640, 750, 1080],
+    imageSizes: [160, 220, 280],
+  },
+};
+
+export default nextConfig;
+
+```
+
+============================================================
+FILE: tailwind.config.ts
+------------------------------------------------------------
+```ts
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    "./app/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./hooks/**/*.{ts,tsx}",
+    "./lib/**/*.{ts,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+
+export default config;
+
+```
+
+============================================================
+FILE: postcss.config.js
+------------------------------------------------------------
+```js
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
+
+```
+
+============================================================
+FILE: tsconfig.json
+------------------------------------------------------------
+```json
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
+
+```
+
+============================================================
+FILE: next-env.d.ts
+------------------------------------------------------------
+```ts
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/basic-features/typescript for more information.
+
+```
+
+============================================================
+FILE: .eslintrc.json
+------------------------------------------------------------
+```json
+{
+  "extends": ["next/core-web-vitals", "prettier"]
+}
+
+```
+
+============================================================
+FILE: app/layout.tsx
+------------------------------------------------------------
+```tsx
+import type { Metadata } from "next";
+import {
+  Cormorant_Garamond,
+  IM_Fell_English_SC,
+  Jost,
+} from "next/font/google";
+import Cursor from "@/components/ui/Cursor";
+import ProgressBar from "@/components/ui/ProgressBar";
+import { LenisProvider } from "@/components/providers/LenisProvider";
+import "./globals.css";
+
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["300", "400"],
+  style: ["normal", "italic"],
+  adjustFontFallback: false,
+});
+
+const imFell = IM_Fell_English_SC({
+  variable: "--font-im-fell",
+  subsets: ["latin"],
+  weight: "400",
+  adjustFontFallback: false,
+});
+
+const jost = Jost({
+  variable: "--font-jost",
+  subsets: ["latin"],
+  weight: ["100", "200", "300"],
+  adjustFontFallback: false,
+});
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://verrdelle.com"),
+  title: "Verrdelle â€” Imperial Botanical Atelier",
+  description:
+    "Where ancient ritual meets modern ceremony. Luxury skincare elevated to imperial status.",
+  openGraph: {
+    title: "Verrdelle â€” Imperial Botanical Atelier",
+    description:
+      "Where ancient ritual meets modern ceremony. Luxury skincare elevated to imperial status.",
+    type: "website",
+    url: "https://verrdelle.com",
+    siteName: "Verrdelle",
+    images: [
+      {
+        url: "/images/1.png",
+        width: 1200,
+        height: 630,
+        alt: "Verrdelle imperial skincare ritual",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Verrdelle â€” Imperial Botanical Atelier",
+    description:
+      "Where ancient ritual meets modern ceremony. Luxury skincare elevated to imperial status.",
+    images: ["/images/1.png"],
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>): JSX.Element {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${cormorant.variable} ${imFell.variable} ${jost.variable} antialiased`}
+      >
+        <LenisProvider>
+          <Cursor />
+          <ProgressBar />
+          {children}
+        </LenisProvider>
+      </body>
+    </html>
+  );
+}
+
+```
+
+============================================================
+FILE: app/page.tsx
+------------------------------------------------------------
+```tsx
+import HeroPage from "@/components/hero/HeroPage";
+
+export const dynamic = "force-static";
+
+export default function Home(): JSX.Element {
+  return <HeroPage />;
+}
+
+```
+
+============================================================
+FILE: app/catalogue/layout.tsx
+------------------------------------------------------------
+```tsx
+export default function CatalogueLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}): JSX.Element {
+  return (
+    <>
+      {/* Preload first product image before React hydrates */}
+      <link
+        rel="preload"
+        href="/images/1.png"
+        as="image"
+        type="image/png"
+      />
+      {children}
+    </>
+  );
+}
+
+```
+
+============================================================
+FILE: app/catalogue/page.tsx
+------------------------------------------------------------
+```tsx
+import CataloguePage from "@/components/catalogue/CataloguePage";
+
+export const dynamic = "force-static";
+export const revalidate = false;
+
+export default function Catalogue(): JSX.Element {
+  return <CataloguePage />;
+}
+
+```
+
+============================================================
+FILE: app/globals.css
+------------------------------------------------------------
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gold: #c9a84c;
+  --gold-light: #e8d5a3;
+  --gold-dim: rgba(201, 168, 76, 0.3);
+  --ink: #05080a;
+  --bg: #08090b;
+  --text: #e8e0d5;
+  --muted: rgba(232, 224, 213, 0.6);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  color: var(--text);
+  background: var(--bg);
+  font-family: var(--font-jost), sans-serif;
+  font-weight: 100;
+  cursor: none;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  background-size: 250px;
+  pointer-events: none;
+  z-index: 9997;
+  opacity: 0.22;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 2px;
+}
+
+@media (pointer: coarse), (max-width: 1024px) {
+  body {
+    cursor: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+```
+
+============================================================
+FILE: types/index.ts
+------------------------------------------------------------
+```ts
+export type ThemeName = "vc" | "aloe" | "ha";
+export type ProductId = "p1" | "p2" | "p3";
+
+export interface ProductStat {
+  value: string;
+  label: string;
+}
+
+export interface Product {
+  id: string;
+  prodId: ProductId;
+  theme: ThemeName;
+  num: string;
+  ghost: string;
+  title: string;
+  body: string;
+  ingredient: string;
+  stats: ProductStat[];
+  seriesLabel: string;
+  image: string;
+}
+
+export interface ThemeToken {
+  c: [number, number, number];
+  gold: string;
+  gl: string;
+  bg: string;
+  glow: string;
+}
+
+export interface ParallaxOffset {
+  x: number;
+  y: number;
+}
+
+```
+
+============================================================
+FILE: hooks/useLenis.ts
+------------------------------------------------------------
+```ts
+"use client";
+
+import Lenis from "lenis";
+import { useEffect } from "react";
+
+export function useLenis(): void {
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      smoothWheel: true,
+      touchMultiplier: 1.2,
+      prevent: () => false,
+    });
+
+    let frame = 0;
+    const raf = (time: number) => {
+      lenis.raf(time);
+      frame = window.requestAnimationFrame(raf);
+    };
+
+    frame = window.requestAnimationFrame(raf);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      lenis.destroy();
+    };
+  }, []);
+}
+
+```
+
+============================================================
+FILE: hooks/usePanelProgress.ts
+------------------------------------------------------------
+```ts
+"use client";
+
+import { create } from "zustand";
+
+interface PanelProgressStore {
+  isLoaded: boolean;
+  setLoaded: (value: boolean) => void;
+}
+
+export const usePanelProgress = create<PanelProgressStore>((set) => ({
+  isLoaded: false,
+  setLoaded: (value) => set({ isLoaded: value }),
+}));
+
+```
+
+============================================================
+FILE: lib/utils/lerp.ts
+------------------------------------------------------------
+```ts
+export function lerp(start: number, end: number, alpha: number): number {
+  return start + (end - start) * alpha;
+}
+
+export function lerpColor(
+  current: [number, number, number],
+  target: [number, number, number],
+  alpha: number,
+): [number, number, number] {
+  return [
+    lerp(current[0], target[0], alpha),
+    lerp(current[1], target[1], alpha),
+    lerp(current[2], target[2], alpha),
+  ];
+}
+
+```
+
+============================================================
+FILE: lib/data/themes.ts
+------------------------------------------------------------
+```ts
+import { ThemeName, ThemeToken } from "@/types";
+
+export const themes: Record<ThemeName, ThemeToken> = {
+  vc: {
+    c: [220, 140, 30],
+    gold: "#c9a84c",
+    gl: "#e8d5a3",
+    bg: "radial-gradient(ellipse at 15% 50%,rgba(180,80,0,0.28),transparent 55%),radial-gradient(ellipse at 80% 20%,rgba(255,180,40,0.1),transparent 50%),linear-gradient(160deg,#180900 0%,#6a2e00 55%,#020202 100%)",
+    glow: "radial-gradient(circle,rgba(220,140,30,0.55),transparent 70%)",
+  },
+  aloe: {
+    c: [60, 180, 90],
+    gold: "#8ecb7a",
+    gl: "#c5f0b2",
+    bg: "radial-gradient(ellipse at 18% 55%,rgba(10,90,40,0.28),transparent 55%),radial-gradient(ellipse at 78% 22%,rgba(50,170,90,0.1),transparent 50%),linear-gradient(160deg,#001508 0%,#0b3d20 55%,#010605 100%)",
+    glow: "radial-gradient(circle,rgba(50,180,90,0.55),transparent 70%)",
+  },
+  ha: {
+    c: [140, 120, 220],
+    gold: "#b8aae0",
+    gl: "#dcd8f5",
+    bg: "radial-gradient(ellipse at 50% 45%,rgba(40,30,80,0.5),transparent 65%),radial-gradient(ellipse at 8% 78%,rgba(100,80,200,0.07),transparent 40%),linear-gradient(160deg,#020209 0%,#0c0c1c 55%,#010108 100%)",
+    glow: "radial-gradient(circle,rgba(130,110,210,0.5),transparent 70%)",
+  },
+};
+
+```
+
+============================================================
+FILE: lib/data/products.ts
+------------------------------------------------------------
+```ts
+import { Product } from "@/types";
+
+export const products: Product[] = [
+  {
+    id: "panel-1",
+    prodId: "p1",
+    theme: "vc",
+    num: "01 â€” Vitamin C Elixir",
+    ghost: "Citrus",
+    title: "The Golden\nRadiance Serum",
+    body: "Harvested at peak luminosity. Pure vitamin C crystallized into a ritual oil that rewrites your skin's story with every dawn.",
+    ingredient: "Kakadu Plum Â· Rosehip Â· Gold Flakes",
+    stats: [
+      { value: "20%", label: "Pure Vitamin C" },
+      { value: "72hr", label: "Radiance Duration" },
+      { value: "Ã—3", label: "Collagen Stimulation" },
+    ],
+    seriesLabel: "Vitamin C Imperial Series",
+    image: "/images/1.png",
+  },
+  {
+    id: "panel-2",
+    prodId: "p2",
+    theme: "aloe",
+    num: "02 â€” Aloe Vera Ritual",
+    ghost: "Aloe",
+    title: "Pure Glow\nTemple Wash",
+    body: "Ancient succulent wisdom distilled into morning ritual. Jade-cold aloe meets sacred clay minerals in a ceremony of renewal.",
+    ingredient: "Aloe Barbadensis Â· Clay Â· Jade Mineral",
+    stats: [
+      { value: "98%", label: "Natural Origin" },
+      { value: "pH 5.5", label: "Skin Perfect Balance" },
+      { value: "48hr", label: "Deep Hydration" },
+    ],
+    seriesLabel: "Aloe Imperial Series",
+    image: "/images/2.png",
+  },
+  {
+    id: "panel-3",
+    prodId: "p3",
+    theme: "ha",
+    num: "03 â€” Imperial Midnight",
+    ghost: "Noir",
+    title: "Hyaluronic\nBlack Pearl Serum",
+    body: "Born from the depths of night. Triple-weight hyaluronic acid fused with obsidian pearl extract â€” an emperor's decree for eternal youth.",
+    ingredient: "3Ã— HA Matrix Â· Black Pearl Â· Night Jasmine",
+    stats: [
+      { value: "3Ã—", label: "Molecular Weight HA" },
+      { value: "1000Ã—", label: "Water Retention" },
+      { value: "Night", label: "Circadian Activation" },
+    ],
+    seriesLabel: "Hyaluronic Imperial Series",
+    image: "/images/3.png",
+  },
+];
+
+```
+
+============================================================
+FILE: components/providers/LenisProvider.tsx
+------------------------------------------------------------
+```tsx
+"use client";
+
+import { usePathname } from "next/navigation";
+import { PropsWithChildren } from "react";
+import { useLenis } from "@/hooks/useLenis";
+
+function LenisInner({ children }: PropsWithChildren): JSX.Element {
+  useLenis();
+  return <>{children}</>;
+}
+
+export function LenisProvider({ children }: PropsWithChildren): JSX.Element {
+  const pathname = usePathname();
+  const isCatalogue = pathname === "/catalogue";
+
+  // On catalogue, don't use Lenis â€” native CSS scroll snap handles everything
+  if (isCatalogue) return <>{children}</>;
+  return <LenisInner>{children}</LenisInner>;
+}
+
+```
+
+============================================================
+FILE: components/cosmos/StarCanvas.tsx
+------------------------------------------------------------
+```tsx
+"use client";
+
+import { useEffect, useRef } from "react";
+import { lerpColor } from "@/lib/utils/lerp";
+
+interface Star {
+  x: number;
+  y: number;
+  r: number;
+  a: number;
+  s: number;
+  p: number;
+}
+
+interface StarCanvasProps {
+  targetColor: [number, number, number];
+}
+
+function createStar(width: number, height: number): Star {
+  return {
+    x: Math.random() * width,
+    y: Math.random() * height,
+    r: Math.random() * 1.3 + 0.2,
+    a: Math.random() * 0.4 + 0.06,
+    s: Math.random() * 0.35 + 0.06,
+    p: Math.random() * Math.PI * 2,
+  };
+}
+
+function lerpColorSnapped(
+  current: [number, number, number],
+  target: [number, number, number],
+  alpha: number,
+): [number, number, number] {
+  const result = lerpColor(current, target, alpha);
+  return result.map((v, i) =>
+    Math.abs(v - target[i]) < 0.8 ? target[i] : v,
+  ) as [number, number, number];
+}
+
+export default function StarCanvas({ targetColor }: StarCanvasProps): JSX.Element {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const colorRef = useRef<[number, number, number]>([201, 168, 76]);
+  const targetColorRef = useRef<[number, number, number]>(targetColor);
+
+  // Effect 2 â€” only updates the target color ref, no canvas teardown
+  useEffect(() => {
+    targetColorRef.current = targetColor;
+  }, [targetColor]);
+
+  // Effect 1 â€” runs ONCE, sets up canvas + stars + rAF
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext("2d", { alpha: false });
+    if (!canvas || !context) return;
+
+    let width = 0;
+    let height = 0;
+    let stars: Star[] = [];
+    let frame = 0;
+    let frameCount = 0;
+    let isVisible = !document.hidden;
+    let cachedColorStr = "";
+
+    const resize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+      stars = Array.from({ length: 180 }, () => createStar(width, height));
+    };
+
+    resize();
+    window.addEventListener("resize", resize, { passive: true });
+
+    const draw = (time: number) => {
+      if (!isVisible) {
+        frame = window.requestAnimationFrame(draw);
+        return;
+      }
+
+      frameCount++;
+
+      // Cap at 30fps â€” stars don't need 60fps
+      if (frameCount % 2 !== 0) {
+        frame = window.requestAnimationFrame(draw);
+        return;
+      }
+
+      const seconds = time / 1000;
+      const newColor = lerpColorSnapped(colorRef.current, targetColorRef.current, 0.025);
+      colorRef.current = newColor;
+
+      const [r, g, b] = colorRef.current;
+
+      // Only rebuild color base string when color changes significantly
+      const newColorStr = `${Math.round(r)},${Math.round(g)},${Math.round(b)}`;
+      if (newColorStr !== cachedColorStr) cachedColorStr = newColorStr;
+
+      context.clearRect(0, 0, width, height);
+
+      stars.forEach((star) => {
+        const alpha = star.a * (0.5 + 0.5 * Math.sin(seconds * star.s + star.p));
+        context.globalAlpha = alpha;
+        context.fillStyle = `rgb(${cachedColorStr})`;
+        context.beginPath();
+        context.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+        context.fill();
+      });
+
+      context.globalAlpha = 1;
+      frame = window.requestAnimationFrame(draw);
+    };
+
+    frame = window.requestAnimationFrame(draw);
+
+    const onVisibility = () => {
+      isVisible = !document.hidden;
+    };
+
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-0" aria-hidden />;
+}
+
+```
+
+============================================================
+FILE: components/ui/Cursor.tsx
+------------------------------------------------------------
+```tsx
+"use client";
+
+import { useCallback, useEffect } from "react";
+import { motion, useMotionValue, useSpring } from "framer-motion";
+import styles from "./Cursor.module.css";
+
+export default function Cursor(): JSX.Element {
+  const dotX = useMotionValue(0);
+  const dotY = useMotionValue(0);
+  const ringTargetX = useMotionValue(0);
+  const ringTargetY = useMotionValue(0);
+  const ringX = useSpring(ringTargetX, { stiffness: 80, damping: 20 });
+  const ringY = useSpring(ringTargetY, { stiffness: 80, damping: 20 });
+  const ringScale = useSpring(1, { stiffness: 180, damping: 20 });
+
+  const onEnter = useCallback(() => ringScale.set(1.75), [ringScale]);
+  const onLeave = useCallback(() => ringScale.set(1), [ringScale]);
+
+  useEffect(() => {
+    const onMove = (event: MouseEvent) => {
+      dotX.set(event.clientX - 3);
+      dotY.set(event.clientY - 3);
+      ringTargetX.set(event.clientX - 20);
+      ringTargetY.set(event.clientY - 20);
+    };
+
+    const selectors = "a, button, [role='button']";
+    const interactive = Array.from(
+      document.querySelectorAll<HTMLElement>(selectors),
+    );
+    interactive.forEach((item) => {
+      item.addEventListener("mouseenter", onEnter);
+      item.addEventListener("mouseleave", onLeave);
+    });
+
+    window.addEventListener("mousemove", onMove);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      interactive.forEach((item) => {
+        item.removeEventListener("mouseenter", onEnter);
+        item.removeEventListener("mouseleave", onLeave);
+      });
+    };
+  }, [dotX, dotY, ringTargetX, ringTargetY, onEnter, onLeave]);
+
+  return (
+    <div className={styles.cursor} aria-hidden>
+      <motion.div className={styles.dot} style={{ x: dotX, y: dotY }} />
+      <motion.div
+        className={styles.ring}
+        style={{ x: ringX, y: ringY, scale: ringScale }}
+      />
+    </div>
+  );
+}
+
+```
+
+============================================================
+FILE: components/ui/Cursor.module.css
+------------------------------------------------------------
+```css
+.cursor {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+}
+
+.dot {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--gold);
+  mix-blend-mode: difference;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.ring {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--gold-dim);
+  z-index: 9998;
+  pointer-events: none;
+}
+
+@media (max-width: 1024px), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .cursor {
+    display: none;
+  }
+}
+
+```
+
+============================================================
+FILE: components/ui/Loader.tsx
+------------------------------------------------------------
+```tsx
+"use client";
+
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { usePanelProgress } from "@/hooks/usePanelProgress";
+import styles from "./Loader.module.css";
+
+export default function Loader(): JSX.Element {
+  const prefersReducedMotion = useReducedMotion();
+  const [isVisible, setIsVisible] = useState(true);
+  const setLoaded = usePanelProgress((state) => state.setLoaded);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(
+      () => {
+        setIsVisible(false);
+        setLoaded(true);
+      },
+      prefersReducedMotion ? 300 : 2200,
+    );
+    return () => window.clearTimeout(timeout);
+  }, [prefersReducedMotion, setLoaded]);
+
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          className={styles.loader}
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
+          role="status"
+          aria-live="polite"
+          aria-label="Loading page"
+        >
+          <motion.div
+            className={styles.brand}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.3 }}
+          >
+            Verrdelle
+          </motion.div>
+          <div className={styles.barWrap}>
+            <motion.div
+              className={styles.bar}
+              initial={{ width: "0%" }}
+              animate={{ width: "100%" }}
+              transition={{ duration: prefersReducedMotion ? 0.3 : 1.8, delay: 0.6 }}
+            />
+          </div>
+          <motion.div
+            className={styles.sub}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1.2 }}
+          >
+            Preparing your ritual
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+```
+
+============================================================
+FILE: components/ui/Loader.module.css
+------------------------------------------------------------
+```css
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+}
+
+.brand {
+  font-family: var(--font-im-fell), serif;
+  font-size: clamp(30px, 5vw, 60px);
+  color: var(--gold);
+  letter-spacing: 20px;
+}
+
+.barWrap {
+  width: 200px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.bar {
+  height: 100%;
+  background: var(--gold);
+}
+
+.sub {
+  font-size: 9px;
+  letter-spacing: 5px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+```
+
+============================================================
+FILE: components/ui/Nav.tsx
+------------------------------------------------------------
+```tsx
+"use client";
+
+import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
+import styles from "./Nav.module.css";
+
+const NAV_ITEMS = ["Ritual", "Collection", "Our Story"];
+
+export default function Nav(): JSX.Element {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <nav className={styles.nav} aria-label="Primary">
+      <Link className={styles.logo} href="/" aria-label="Verrdelle home">
+        Verrdelle
+      </Link>
+      <div className={styles.desktop}>
+        {NAV_ITEMS.map((item) => (
+          <Link key={item} href="#" className={styles.item} aria-label={item}>
+            {item}
+          </Link>
+        ))}
+        <Link href="#" className={`${styles.item} ${styles.shop}`} aria-label="Shop">
+          Shop
+        </Link>
+      </div>
+      <button
+        className={styles.hamburger}
+        onClick={() => setIsOpen((value) => !value)}
+        aria-label="Toggle menu"
+        aria-expanded={isOpen}
+        aria-controls="mobile-nav"
+        type="button"
+      >
+        {isOpen ? "Ã—" : "â˜°"}
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            id="mobile-nav"
+            className={styles.drawer}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {NAV_ITEMS.map((item) => (
+              <Link
+                key={item}
+                href="#"
+                className={styles.drawerItem}
+                aria-label={item}
+                onClick={() => setIsOpen(false)}
+              >
+                {item}
+              </Link>
+            ))}
+            <Link
+              href="#"
+              className={`${styles.drawerItem} ${styles.shop}`}
+              aria-label="Shop"
+              onClick={() => setIsOpen(false)}
+            >
+              Shop
+            </Link>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
+  );
+}
+
+```
+
+============================================================
+FILE: components/ui/Nav.module.css
+------------------------------------------------------------
+```css
+.nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 20px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 700;
+}
+
+.logo {
+  font-family: var(--font-im-fell), serif;
+  font-size: 20px;
+  letter-spacing: 6px;
+  color: var(--gold);
+  text-shadow: 0 0 30px var(--gold-dim);
+}
+
+.desktop {
+  display: none;
+  align-items: center;
+  gap: 35px;
+}
+
+.item {
+  font-size: 9px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.item:hover {
+  color: var(--gold);
+}
+
+.shop {
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  padding: 9px 22px;
+  border-radius: 50px;
+}
+
+.hamburger {
+  border: 1px solid var(--gold-dim);
+  border-radius: 999px;
+  color: var(--gold);
+  background: transparent;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: rgba(5, 8, 10, 0.96);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 22px;
+  padding: 24px;
+}
+
+.drawerItem {
+  font-size: 14px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+}
+
+@media (min-width: 768px) {
+  .nav {
+    padding: 32px 50px;
+  }
+
+  .desktop {
+    display: flex;
+  }
+
+  .hamburger {
+    display: none;
+  }
+}
+
+```
+
+============================================================
+FILE: components/ui/ProgressBar.tsx
+------------------------------------------------------------
+```tsx
+"use client";
+
+import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
+import { useMotionValue, motion } from "framer-motion";
+
+export default function ProgressBar(): JSX.Element {
+  const width = useMotionValue("0%");
+  const pathname = usePathname();
+  const trackRef = useRef<Element | null>(null);
+  const cleanupRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    if (pathname !== "/catalogue") {
+      width.set("0%");
+      return;
+    }
+
+    // Retry finding the track (may not be mounted yet)
+    let track: HTMLElement | null = null;
+    const findTrack = () => {
+      track = document.querySelector("[data-catalogue-track]") as HTMLElement | null;
+      return track !== null;
+    };
+
+    let retries = 0;
+    const interval = setInterval(() => {
+      if (findTrack() || retries++ > 20) {
+        clearInterval(interval);
+        if (!track) return;
+        trackRef.current = track;
+
+        const onScroll = () => {
+          const { scrollLeft, scrollWidth, clientWidth } = track!;
+          const progress = scrollLeft / (scrollWidth - clientWidth);
+          const pct = Math.max(0, Math.min(1, progress)) * 100;
+          width.set(`${pct}%`);
+        };
+
+        track.addEventListener("scroll", onScroll, { passive: true });
+        cleanupRef.current = () => track?.removeEventListener("scroll", onScroll);
+      }
+    }, 50);
+
+    return () => {
+      clearInterval(interval);
+      cleanupRef.current?.();
+    };
+  }, [pathname, width]);
+
+  return (
+    <motion.div
+      aria-hidden
+      className="fixed left-0 top-0 z-[8000] h-px bg-[linear-gradient(90deg,var(--gold),rgba(232,213,163,0.3))] shadow-[0_0_8px_var(--gold)]"
+      style={{ width }}
+    />
+  );
+}
+
+```
+
+============================================================
+FILE: components/hero/HeroPage.tsx
+------------------------------------------------------------
+```tsx
+"use client";
+
+import Link from "next/link";
+import { motion } from "framer-motion";
+import Loader from "@/components/ui/Loader";
+import Nav from "@/components/ui/Nav";
+import ImperialSeal from "./ImperialSeal";
+import StarCanvas from "@/components/cosmos/StarCanvas";
+import styles from "./Hero.module.css";
+import { usePanelProgress } from "@/hooks/usePanelProgress";
+
+export default function HeroPage(): JSX.Element {
+  const isLoaded = usePanelProgress((s) => s.isLoaded);
+
+  return (
+    <>
+      <Loader />
+      <Nav />
+      <StarCanvas targetColor={[201, 168, 76]} />
+      <main className={styles.hero}>
+        <ImperialSeal />
+        <motion.div
+          className={styles.overline}
+          initial={{ opacity: 0, y: 15 }}
+          animate={isLoaded ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+        >
+          Imperial Botanical Atelier
+        </motion.div>
+        <motion.h1
+          className={styles.brand}
+          initial={{ opacity: 0, y: 60 }}
+          animate={isLoaded ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 2.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+        >
+          Verrdelle
+        </motion.h1>
+        <motion.p
+          className={styles.tagline}
+          initial={{ opacity: 0, y: 20 }}
+          animate={isLoaded ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 1.2, ease: "easeOut", delay: 0.45 }}
+        >
+          Where ancient ritual meets modern ceremony
+        </motion.p>
+        <motion.div
+          className={styles.divider}
+          initial={{ opacity: 0 }}
+          animate={isLoaded ? { opacity: 1 } : {}}
+          transition={{ duration: 1, delay: 0.7 }}
+        />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isLoaded ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 1, delay: 0.9 }}
+        >
+          <Link href="/catalogue" className={styles.ctaBtn} aria-label="See the Collection">
+            <span>See Collection</span>
+            <span className={styles.ctaArrow}>â†’</span>
+          </Link>
+        </motion.div>
+      </main>
+    </>
+  );
+}
+
+```
+
+============================================================
+FILE: components/hero/ImperialSeal.tsx
+------------------------------------------------------------
+```tsx
+import styles from "./Hero.module.css";
+
+export default function ImperialSeal(): JSX.Element {
+  return (
+    <div className={styles.seal} aria-hidden>
+      <svg viewBox="0 0 600 600" fill="none" width="100%" height="100%">
+        <circle cx="300" cy="300" r="290" stroke="rgba(201,168,76,0.06)" strokeWidth="1" />
+        <circle cx="300" cy="300" r="265" stroke="rgba(201,168,76,0.04)" strokeWidth="0.5" />
+        <circle
+          cx="300"
+          cy="300"
+          r="250"
+          stroke="rgba(201,168,76,0.08)"
+          strokeWidth="0.5"
+          strokeDasharray="4 8"
+        />
+        <circle cx="300" cy="300" r="235" stroke="rgba(201,168,76,0.03)" strokeWidth="1" />
+        <g stroke="rgba(201,168,76,0.1)" strokeWidth="0.5">
+          <line x1="300" y1="10" x2="300" y2="45" />
+          <line x1="300" y1="555" x2="300" y2="590" />
+          <line x1="10" y1="300" x2="45" y2="300" />
+          <line x1="555" y1="300" x2="590" y2="300" />
+          <line x1="90" y1="90" x2="112" y2="112" />
+          <line x1="488" y1="90" x2="466" y2="112" />
+          <line x1="90" y1="510" x2="112" y2="488" />
+          <line x1="488" y1="510" x2="466" y2="488" />
+        </g>
+        <g fill="rgba(201,168,76,0.18)">
+          <polygon points="300,14 304,22 300,30 296,22" />
+          <polygon points="450,60 454,68 450,76 446,68" />
+          <polygon points="540,150 544,158 540,166 536,158" />
+          <polygon points="586,300 580,304 572,300 580,296" />
+          <polygon points="540,450 536,442 540,434 544,442" />
+          <polygon points="450,540 446,532 450,524 454,532" />
+          <polygon points="300,586 296,578 300,570 304,578" />
+          <polygon points="150,540 154,532 150,524 146,532" />
+          <polygon points="60,450 64,442 60,434 56,442" />
+          <polygon points="14,300 20,296 28,300 20,304" />
+          <polygon points="60,150 56,158 60,166 64,158" />
+          <polygon points="150,60 154,68 150,76 146,68" />
+        </g>
+      </svg>
+    </div>
+  );
+}
+
+```
+
+============================================================
+FILE: components/hero/Hero.module.css
+------------------------------------------------------------
+```css
+.hero {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.overline {
+  font-size: 9px;
+  letter-spacing: 9px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 30px;
+}
+
+.brand {
+  font-family: var(--font-im-fell), serif;
+  font-size: clamp(60px, 12vw, 180px);
+  letter-spacing: clamp(10px, 2vw, 35px);
+  color: var(--gold);
+  text-shadow: 0 0 80px var(--gold-dim), 0 0 160px rgba(201, 168, 76, 0.1);
+  line-height: 1;
+}
+
+.tagline {
+  font-family: var(--font-cormorant), serif;
+  font-style: italic;
+  font-weight: 200;
+  font-size: clamp(14px, 1.8vw, 26px);
+  color: var(--muted);
+  margin-top: 25px;
+  letter-spacing: 3px;
+}
+
+.divider {
+  width: 1px;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+  margin-top: 60px;
+}
+
+.hint {
+  font-size: 8px;
+  letter-spacing: 5px;
+  color: rgba(255, 255, 255, 0.2);
+  margin-top: 15px;
+  text-transform: uppercase;
+}
+
+/* â”€â”€ CTA Button â”€â”€ */
+.ctaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 55px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.12), rgba(201,168,76,0.03));
+  border: 1px solid rgba(201,168,76,0.4);
+  border-radius: 100px;
+  color: var(--gold);
+  font-family: var(--font-jost), sans-serif;
+  font-size: 10px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  margin-top: 40px;
+  transition: border-color 0.4s, letter-spacing 0.4s, box-shadow 0.4s;
+}
+
+.ctaBtn:hover {
+  border-color: rgba(201, 168, 76, 0.8);
+  letter-spacing: 7px;
+  box-shadow: 0 0 40px rgba(201, 168, 76, 0.15);
+}
+
+.ctaArrow {
+  font-size: 16px;
+  transition: transform 0.3s;
+}
+
+.ctaBtn:hover .ctaArrow {
+  transform: translateX(4px);
+}
+
+/* â”€â”€ Imperial Seal â”€â”€ */
+.seal {
+  position: absolute;
+  width: min(600px, 80vw);
+  height: min(600px, 80vw);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: sealSpin 90s linear infinite;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+@keyframes sealSpin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+```
+
+============================================================
+FILE: components/catalogue/CataloguePage.tsx
+------------------------------------------------------------
+```tsx
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import Nav from "@/components/ui/Nav";
+import StarCanvas from "@/components/cosmos/StarCanvas";
+import CatalogueTrack from "./CatalogueTrack";
+import { products } from "@/lib/data/products";
+import { themes } from "@/lib/data/themes";
+import { ThemeName } from "@/types";
+import styles from "./Catalogue.module.css";
+
+export default function CataloguePage(): JSX.Element {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isFinale, setIsFinale] = useState(false);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  const activeTheme: ThemeName = isFinale ? "ha" : products[activeIndex]?.theme ?? "vc";
+  const targetColor = themes[activeTheme].c;
+
+  // Apply theme to DOM
+  useEffect(() => {
+    const t = themes[activeTheme];
+    document.documentElement.style.setProperty("--gold", t.gold);
+    document.documentElement.style.setProperty("--gold-light", t.gl);
+    document.body.style.background = t.bg;
+  }, [activeTheme]);
+
+  // Set initial theme on mount
+  useEffect(() => {
+    document.body.style.transition = "background 1.4s ease";
+    const t = themes["vc"];
+    document.documentElement.style.setProperty("--gold", t.gold);
+    document.documentElement.style.setProperty("--gold-light", t.gl);
+    document.body.style.background = t.bg;
+
+    // Cleanup: reset DOM styles when leaving catalogue
+    return () => {
+      document.body.style.background = "";
+      document.body.style.transition = "";
+      document.documentElement.style.removeProperty("--gold");
+      document.documentElement.style.removeProperty("--gold-light");
+    };
+  }, []);
+
+  return (
+    <div className={styles.page}>
+      <Nav />
+      <StarCanvas targetColor={targetColor} />
+      <CatalogueTrack
+        ref={trackRef}
+        products={products}
+        onActiveIndexChange={setActiveIndex}
+        onFinaleChange={setIsFinale}
+      />
+    </div>
+  );
+}
+
+```
+
+============================================================
+FILE: components/catalogue/Catalogue.module.css
+------------------------------------------------------------
+```css
+.page {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg);
+}
+
+```
+
+============================================================
+FILE: components/catalogue/CatalogueTrack.tsx
+------------------------------------------------------------
+```tsx
+"use client";
+
+import { forwardRef, useEffect, useRef } from "react";
+import { Product } from "@/types";
+import ProductPanel from "./ProductPanel";
+import Finale from "@/components/finale/Finale";
+import styles from "./CatalogueTrack.module.css";
+
+interface CatalogueTrackProps {
+  products: Product[];
+  onActiveIndexChange: (index: number) => void;
+  onFinaleChange: (value: boolean) => void;
+}
+
+const CatalogueTrack = forwardRef<HTMLDivElement, CatalogueTrackProps>(
+  ({ products, onActiveIndexChange, onFinaleChange }, ref) => {
+    const innerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      const track = innerRef.current;
+      if (!track) return;
+
+      // IntersectionObserver â€” detects which panel is visible
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const index = Number(entry.target.getAttribute("data-index"));
+            const isFinale = entry.target.getAttribute("data-finale") === "true";
+
+            if (isFinale) {
+              onFinaleChange(true);
+            } else {
+              onFinaleChange(false);
+              onActiveIndexChange(index);
+            }
+          });
+        },
+        {
+          root: track,
+          threshold: 0.55,
+        },
+      );
+
+      const panels = track.querySelectorAll("[data-panel]");
+      panels.forEach((panel) => observer.observe(panel));
+
+      // Keyboard navigation
+      const onKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "ArrowRight") {
+          track.scrollBy({ left: window.innerWidth, behavior: "smooth" });
+        }
+        if (e.key === "ArrowLeft") {
+          track.scrollBy({ left: -window.innerWidth, behavior: "smooth" });
+        }
+      };
+
+      window.addEventListener("keydown", onKeyDown);
+
+      // Scroll restoration â€” save position on scroll
+      const onScroll = () => {
+        sessionStorage.setItem("catalogue-scroll", String(track.scrollLeft));
+      };
+      track.addEventListener("scroll", onScroll, { passive: true });
+
+      // Restore scroll position on mount
+      const savedScroll = sessionStorage.getItem("catalogue-scroll");
+      if (savedScroll) {
+        track.scrollLeft = parseInt(savedScroll, 10);
+      }
+
+      return () => {
+        observer.disconnect();
+        window.removeEventListener("keydown", onKeyDown);
+        track.removeEventListener("scroll", onScroll);
+      };
+    }, [products, onActiveIndexChange, onFinaleChange]);
+
+    return (
+      <div ref={innerRef} className={styles.track} data-catalogue-track>
+        {products.map((product, index) => (
+          <div
+            key={product.id}
+            data-panel
+            data-index={index}
+            className={styles.slide}
+          >
+            <ProductPanel product={product} />
+          </div>
+        ))}
+        <div
+          data-panel
+          data-finale="true"
+          className={styles.slide}
+        >
+          <Finale active />
+        </div>
+      </div>
+    );
+  },
+);
+
+CatalogueTrack.displayName = "CatalogueTrack";
+export default CatalogueTrack;
+
+```
+
+============================================================
+FILE: components/catalogue/CatalogueTrack.module.css
+------------------------------------------------------------
+```css
+/* THE ENTIRE HORIZONTAL SCROLL MECHANISM â€” pure CSS, zero JS */
+.track {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+
+  /* Hide scrollbar visually, keep functionality */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.slide {
+  flex-shrink: 0;
+  width: 100vw;
+  height: 100vh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  position: relative;
+  overflow: hidden;
+
+  /* Skip rendering for off-screen panels */
+  content-visibility: auto;
+  contain-intrinsic-size: 100vw 100vh;
+}
+
+```
+
+============================================================
+FILE: components/catalogue/ProductPanel.tsx
+------------------------------------------------------------
+```tsx
+"use client";
+
+import Image from "next/image";
+import { Product } from "@/types";
+import BotanicalVC from "./botanicals/BotanicalVC";
+import BotanicalAloe from "./botanicals/BotanicalAloe";
+import BotanicalHA from "./botanicals/BotanicalHA";
+import styles from "./ProductPanel.module.css";
+
+interface ProductPanelProps {
+  product: Product;
+}
+
+function getBotanical(theme: Product["theme"]): JSX.Element {
+  if (theme === "vc") return <BotanicalVC />;
+  if (theme === "aloe") return <BotanicalAloe />;
+  return <BotanicalHA />;
+}
+
+function getPanelBgClass(theme: Product["theme"]): string {
+  if (theme === "vc") return styles.vcBg;
+  if (theme === "aloe") return styles.aloeBg;
+  return styles.haBg;
+}
+
+export default function ProductPanel({ product }: ProductPanelProps): JSX.Element {
+  return (
+    <section className={styles.panel} aria-labelledby={`${product.id}-title`}>
+      {/* Static background â€” no animation */}
+      <div className={`${styles.panelBg} ${getPanelBgClass(product.theme)}`} />
+
+      {/* Botanical â€” static SVG, no parallax, no motion */}
+      {getBotanical(product.theme)}
+
+      {/* Decorative rings â€” CSS animation only, GPU compositor */}
+      <div className={styles.ring} aria-hidden />
+      <div className={styles.ringInner} aria-hidden />
+
+      {/* Content layout */}
+      <div className={styles.content}>
+        {/* LEFT â€” Text card */}
+        <div className={styles.textCard}>
+          <span className={styles.ghost}>{product.ghost}</span>
+          <span className={styles.num}>{product.num}</span>
+          <h2 id={`${product.id}-title`} className={styles.title}>
+            {product.title}
+          </h2>
+          <p className={styles.body}>{product.body}</p>
+          <span className={styles.ingredient}>{product.ingredient}</span>
+        </div>
+
+        {/* CENTER â€” Product image (CSS bob, static shadow) */}
+        <div className={styles.imageWrap}>
+          <div className={styles.imageShadow} aria-hidden />
+          <div className={styles.imageFloat}>
+            <Image
+              src={product.image}
+              alt={product.title.replace("\n", " ")}
+              width={280}
+              height={500}
+              className={styles.productImg}
+              priority={product.prodId === "p1"}
+              loading={product.prodId === "p1" ? "eager" : "lazy"}
+              sizes="(max-width: 889px) 160px, (max-width: 1556px) 18vw, 280px"
+              placeholder="blur"
+              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+            />
+          </div>
+        </div>
+
+        {/* RIGHT â€” Stats card */}
+        <div className={styles.statsCard}>
+          <div className={styles.stats}>
+            {product.stats.map((stat) => (
+              <div key={stat.label} className={styles.statRow}>
+                <span className={styles.value}>{stat.value}</span>
+                <span className={styles.label}>{stat.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom label */}
+      <div className={styles.jade} aria-hidden>
+        <span>{product.seriesLabel}</span>
+      </div>
+    </section>
+  );
+}
+
+```
+
+============================================================
+FILE: components/catalogue/ProductPanel.module.css
+------------------------------------------------------------
+```css
+.panel {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* â”€â”€ Backgrounds â”€â”€ */
+.panelBg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.vcBg {
+  background:
+    radial-gradient(ellipse at 15% 50%, rgba(220,110,10,0.18), transparent 55%),
+    radial-gradient(ellipse at 85% 30%, rgba(255,180,40,0.12), transparent 50%);
+}
+
+.aloeBg {
+  background:
+    radial-gradient(ellipse at 20% 60%, rgba(20,100,55,0.22), transparent 55%),
+    radial-gradient(ellipse at 80% 25%, rgba(60,180,100,0.1), transparent 50%);
+}
+
+.haBg {
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(40,30,60,0.5), transparent 70%),
+    radial-gradient(ellipse at 10% 80%, rgba(180,150,255,0.06), transparent 40%);
+}
+
+/* â”€â”€ Botanical SVG layer â”€â”€ */
+.panel > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* â”€â”€ Decorative rings â€” GPU compositor â”€â”€ */
+.ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(56vw, 760px);
+  height: min(56vw, 760px);
+  border-radius: 999px;
+  border: 1px solid rgba(232, 213, 163, 0.18);
+  pointer-events: none;
+  z-index: 1;
+  will-change: transform;
+  animation: ringSpin 70s linear infinite;
+}
+
+/* Static glow â€” doesn't animate, painted once and cached */
+.ring::before {
+  content: "";
+  position: absolute;
+  inset: -60px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 90px rgba(232,213,163,0.06), 0 0 100px rgba(201,168,76,0.08);
+  pointer-events: none;
+}
+
+.ringInner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(42vw, 560px);
+  height: min(42vw, 560px);
+  border-radius: 999px;
+  border: 1px dashed rgba(232, 213, 163, 0.24);
+  pointer-events: none;
+  z-index: 1;
+  will-change: transform;
+  animation: ringSpinReverse 52s linear infinite;
+}
+
+/* CRITICAL: start from translated position so animation never touches margin */
+@keyframes ringSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes ringSpinReverse {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(-360deg); }
+}
+
+/* â”€â”€ Content layout â”€â”€ */
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(40px, 6vw, 120px);
+  width: 100%;
+  max-width: 1400px;
+  padding: 0 clamp(24px, 4vw, 80px);
+}
+
+/* â”€â”€ Text card (no backdrop-filter) â”€â”€ */
+.textCard {
+  width: min(460px, 33vw);
+  border-radius: 38% 62% 52% 48% / 42% 38% 62% 58%;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background:
+    radial-gradient(circle at 20% 18%, rgba(255, 255, 255, 0.13), transparent 52%),
+    linear-gradient(155deg, rgba(255, 255, 255, 0.09), rgba(8, 9, 11, 0.72));
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  padding: clamp(20px, 2vw, 34px) clamp(22px, 2.2vw, 36px);
+}
+
+/* â”€â”€ Stats card (no backdrop-filter) â”€â”€ */
+.statsCard {
+  width: min(460px, 33vw);
+  border-radius: 56% 44% 40% 60% / 52% 58% 42% 48%;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background:
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.11), transparent 50%),
+    linear-gradient(155deg, rgba(255, 255, 255, 0.07), rgba(8, 9, 11, 0.75));
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.18);
+  padding: clamp(20px, 2vw, 34px) clamp(22px, 2.2vw, 36px);
+}
+
+/* â”€â”€ Image area â”€â”€ */
+.imageWrap {
+  position: relative;
+  flex-shrink: 0;
+  z-index: 10;
+  width: clamp(160px, 18vw, 280px);
+  height: clamp(290px, 32vw, 500px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Static shadow â€” painted once, cached */
+.imageShadow {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  filter: blur(20px);
+}
+
+.imageFloat {
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+  animation: imageBob 5.5s ease-in-out infinite;
+}
+
+@keyframes imageBob {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-18px) rotate(1.5deg); }
+}
+
+.productImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* â”€â”€ Typography â”€â”€ */
+.ghost {
+  font-family: var(--font-cormorant), serif;
+  font-style: italic;
+  font-size: clamp(70px, 6vw, 110px);
+  color: rgba(255,255,255,0.06);
+  display: block;
+  line-height: 1;
+  margin-bottom: -18px;
+  letter-spacing: -2px;
+}
+
+.num {
+  font-size: 9px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.78;
+  display: block;
+  margin-bottom: 18px;
+}
+
+.title {
+  font-family: var(--font-im-fell), serif;
+  font-size: clamp(26px, 3vw, 48px);
+  color: var(--gold-light);
+  letter-spacing: 3px;
+  line-height: 1.1;
+  margin-bottom: 22px;
+  white-space: pre-line;
+}
+
+.body {
+  font-family: var(--font-cormorant), serif;
+  font-weight: 300;
+  font-size: clamp(15px, 1.3vw, 20px);
+  line-height: 1.75;
+  color: var(--muted);
+  max-width: 335px;
+}
+
+.ingredient {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 28px;
+  font-size: 8px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  padding: 9px 18px;
+  border-radius: 50px;
+}
+
+.ingredient::before {
+  content: "â—†";
+  font-size: 5px;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  align-items: flex-end;
+}
+
+.statRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: right;
+}
+
+.value {
+  font-family: var(--font-cormorant), serif;
+  font-size: clamp(26px, 2.8vw, 44px);
+  color: var(--gold-light);
+  line-height: 1;
+}
+
+.label {
+  font-size: 8px;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.38);
+}
+
+/* â”€â”€ Bottom series label â”€â”€ */
+.jade {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  z-index: 3;
+}
+
+.jade span {
+  font-size: 8px;
+  letter-spacing: 6px;
+  color: rgba(255,255,255,0.2);
+}
+
+.jade::before,
+.jade::after {
+  content: "";
+  width: 60px;
+  height: 1px;
+  display: block;
+  background: linear-gradient(90deg, transparent, var(--gold-dim));
+}
+
+.jade::after {
+  transform: scaleX(-1);
+}
+
+/* â”€â”€ Mobile â”€â”€ */
+@media (max-width: 1023px) {
+  .content {
+    flex-direction: column;
+    gap: 18px;
+    padding: 95px 20px 40px;
+    align-items: stretch;
+    overflow-y: auto;
+  }
+
+  .textCard,
+  .statsCard {
+    width: 100%;
+    border-radius: 24px;
+    padding: 18px;
+  }
+
+  .stats {
+    align-items: flex-start;
+  }
+
+  .statRow {
+    text-align: left;
+  }
+
+  .ring,
+  .ringInner {
+    display: none;
+  }
+}
+
+```
+
+============================================================
+FILE: components/catalogue/botanicals/BotanicalVC.tsx
+------------------------------------------------------------
+```tsx
+export default function BotanicalVC(): JSX.Element {
+  return (
+    <svg
+      viewBox="0 0 1440 900"
+      preserveAspectRatio="xMidYMid slice"
+      shapeRendering="optimizeSpeed"
+      aria-hidden
+    >
+      <g>
+        <circle cx="1200" cy="450" r="320" fill="none" stroke="rgba(220,120,20,0.07)" strokeWidth="1.5" />
+        <circle cx="1200" cy="450" r="260" fill="none" stroke="rgba(220,120,20,0.05)" strokeWidth="1" />
+        <circle cx="1200" cy="450" r="200" fill="rgba(200,100,10,0.04)" stroke="rgba(220,120,20,0.08)" strokeWidth="1" />
+        <g stroke="rgba(220,120,20,0.09)" strokeWidth="1" fill="none">
+          <line x1="1200" y1="130" x2="1200" y2="770" /><line x1="880" y1="450" x2="1520" y2="450" />
+          <line x1="940" y1="190" x2="1460" y2="710" /><line x1="1460" y1="190" x2="940" y2="710" />
+          <line x1="895" y1="310" x2="1505" y2="590" /><line x1="895" y1="590" x2="1505" y2="310" />
+        </g>
+        <path d="M100 500 Q140 430 190 460 Q165 530 100 500Z" fill="rgba(40,90,20,0.07)" stroke="rgba(60,130,30,0.1)" strokeWidth="1" />
+        <path d="M70 545 Q110 465 168 496 Q143 562 70 545Z" fill="rgba(40,90,20,0.06)" stroke="rgba(60,130,30,0.08)" strokeWidth="1" />
+        <path d="M55 360 Q105 285 152 322 Q125 382 55 360Z" fill="rgba(40,90,20,0.06)" stroke="rgba(60,130,30,0.09)" strokeWidth="1" />
+        <g fill="rgba(255,180,50,0.3)">
+          <circle cx="350" cy="180" r="2.5" /><circle cx="185" cy="325" r="1.8" /><circle cx="425" cy="718" r="3" />
+          <circle cx="1055" cy="148" r="2" /><circle cx="1382" cy="352" r="2.5" /><circle cx="900" cy="802" r="2" />
+        </g>
+      </g>
+    </svg>
+  );
+}
+
+```
+
+============================================================
+FILE: components/catalogue/botanicals/BotanicalAloe.tsx
+------------------------------------------------------------
+```tsx
+export default function BotanicalAloe(): JSX.Element {
+  return (
+    <svg
+      viewBox="0 0 1440 900"
+      preserveAspectRatio="xMidYMid slice"
+      shapeRendering="optimizeSpeed"
+      aria-hidden
+    >
+      <g>
+        <g transform="translate(1150,0)">
+          <path d="M150 900 Q145 750 148 650 Q151 570 150 500 Q149 430 150 350 Q151 270 148 180 Q146 120 150 60 Q154 120 152 180 Q149 270 150 350 Q151 430 150 500 Q149 570 151 650 Q154 750 150 900Z" fill="rgba(20,100,50,0.09)" stroke="rgba(40,160,80,0.13)" strokeWidth="1.5" />
+          <path d="M145 400 Q80 370 40 310 Q20 270 35 240 Q55 215 70 240 Q85 270 105 295 Q125 320 140 340 Q148 360 145 380Z" fill="rgba(20,90,45,0.1)" stroke="rgba(40,150,70,0.15)" strokeWidth="1" />
+          <path d="M155 350 Q220 320 265 260 Q285 220 272 192 Q252 167 237 192 Q222 222 202 247 Q182 272 162 295 Q154 315 155 340Z" fill="rgba(20,90,45,0.1)" stroke="rgba(40,150,70,0.15)" strokeWidth="1" />
+          <path d="M143 480 Q70 460 25 395 Q0 358 18 328 Q40 300 60 328 Q80 360 103 385 Q126 410 140 440 Q147 460 143 478Z" fill="rgba(20,90,45,0.09)" stroke="rgba(40,150,70,0.12)" strokeWidth="1" />
+        </g>
+        <g transform="translate(35,310)">
+          <path d="M60 590 Q56 495 58 425 Q60 355 60 285 Q60 215 58 155 Q56 98 60 50 Q64 98 62 155 Q60 215 60 285 Q60 355 62 425 Q64 495 60 590Z" fill="rgba(20,100,50,0.07)" stroke="rgba(40,160,80,0.1)" strokeWidth="1" />
+          <path d="M57 255 Q30 242 15 208 Q5 183 15 163 Q28 148 38 163 Q48 183 55 202 Q58 222 57 248Z" fill="rgba(20,90,45,0.07)" stroke="rgba(40,150,70,0.1)" strokeWidth="1" />
+          <path d="M63 238 Q92 222 108 188 Q118 163 108 143 Q95 128 85 143 Q75 163 68 185 Q62 208 63 232Z" fill="rgba(20,90,45,0.07)" stroke="rgba(40,150,70,0.1)" strokeWidth="1" />
+        </g>
+        <g fill="rgba(100,220,140,0.25)">
+          <circle cx="180" cy="182" r="2" /><circle cx="582" cy="302" r="2.5" />
+          <circle cx="802" cy="722" r="2" /><circle cx="1102" cy="202" r="3" />
+        </g>
+      </g>
+    </svg>
+  );
+}
+
+```
+
+============================================================
+FILE: components/catalogue/botanicals/BotanicalHA.tsx
+------------------------------------------------------------
+```tsx
+export default function BotanicalHA(): JSX.Element {
+  return (
+    <svg
+      viewBox="0 0 1440 900"
+      preserveAspectRatio="xMidYMid slice"
+      shapeRendering="optimizeSpeed"
+      aria-hidden
+    >
+      <g>
+        <g transform="translate(1010,448)">
+          <path d="M0,-145 Q36,-62 32,0 Q36,62 0,105 Q-36,62 -32,0 Q-36,-62 0,-145Z" fill="rgba(220,215,235,0.06)" stroke="rgba(200,190,230,0.1)" strokeWidth="1" />
+          <g stroke="rgba(200,190,230,0.1)" strokeWidth="1" fill="rgba(200,190,230,0.04)">
+            <path d="M-30,-30 Q-82,-92 -57,-134 Q-26,-122 -30,-30Z" />
+            <path d="M30,-30 Q82,-92 57,-134 Q26,-122 30,-30Z" />
+            <path d="M-52,18 Q-124,-12 -134,-52 Q-92,-26 -52,18Z" />
+            <path d="M52,18 Q124,-12 134,-52 Q92,-26 52,18Z" />
+          </g>
+        </g>
+        <g fill="rgba(230,220,255,0.13)" stroke="rgba(200,190,255,0.16)" strokeWidth="1">
+          <ellipse cx="202" cy="140" rx="4" ry="10" /><ellipse cx="1302" cy="702" rx="3" ry="8" />
+          <ellipse cx="452" cy="102" rx="3" ry="7" /><ellipse cx="652" cy="752" rx="2.5" ry="6" />
+        </g>
+        <circle cx="162" cy="502" r="30" fill="rgba(10,8,20,0.65)" stroke="rgba(150,130,200,0.13)" strokeWidth="1" />
+        <circle cx="1352" cy="252" r="20" fill="rgba(10,8,20,0.55)" stroke="rgba(150,130,200,0.1)" strokeWidth="1" />
+        <g fill="rgba(220,210,255,0.28)">
+          <path d="M402 402 L404 394 L406 402 L404 410Z" />
+          <path d="M902 202 L904 194 L906 202 L904 210Z" />
+          <path d="M1202 602 L1204 595 L1206 602 L1204 609Z" />
+        </g>
+      </g>
+    </svg>
+  );
+}
+
+```
+
+============================================================
+FILE: components/finale/Finale.tsx
+------------------------------------------------------------
+```tsx
+"use client";
+
+import Link from "next/link";
+import { motion } from "framer-motion";
+import styles from "./Finale.module.css";
+
+interface FinaleProps {
+  active: boolean;
+}
+
+export default function Finale({ active }: FinaleProps): JSX.Element {
+  return (
+    <section className={styles.finale} aria-labelledby="finale-title">
+      <svg
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
+        viewBox="0 0 1440 900"
+        aria-hidden
+      >
+        <circle cx="720" cy="450" r="380" fill="none" stroke="rgba(201,168,76,0.05)" strokeWidth="1" />
+        <circle cx="720" cy="450" r="340" fill="none" stroke="rgba(201,168,76,0.04)" strokeWidth="0.5" strokeDasharray="5 10" />
+        <circle cx="720" cy="450" r="300" fill="none" stroke="rgba(201,168,76,0.03)" strokeWidth="1" />
+        <g stroke="rgba(201,168,76,0.06)" strokeWidth="0.5">
+          <line x1="720" y1="70" x2="720" y2="830" />
+          <line x1="340" y1="450" x2="1100" y2="450" />
+          <line x1="451" y1="181" x2="989" y2="719" />
+          <line x1="989" y1="181" x2="451" y2="719" />
+        </g>
+      </svg>
+      <motion.p className={styles.subTop} initial={{ opacity: 0 }} animate={active ? { opacity: 1 } : { opacity: 0 }}>
+        The Complete Ritual
+      </motion.p>
+      <motion.h2
+        id="finale-title"
+        className={styles.title}
+        initial={{ opacity: 0, y: 40 }}
+        animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+        transition={{ duration: 1.2 }}
+      >
+        Verrdelle
+      </motion.h2>
+      <motion.p
+        className={styles.sub}
+        initial={{ opacity: 0 }}
+        animate={active ? { opacity: 1 } : { opacity: 0 }}
+        transition={{ duration: 1.2, delay: 0.15 }}
+      >
+        Imperial care, ancient ceremony.
+      </motion.p>
+      <motion.div initial={{ opacity: 0 }} animate={active ? { opacity: 1 } : { opacity: 0 }} transition={{ delay: 0.3 }}>
+        <Link href="#" className={styles.btn} aria-label="Begin your ritual">
+          <span>Begin Your Ritual</span>
+          <span style={{ fontSize: 16 }}>â†’</span>
+        </Link>
+      </motion.div>
+    </section>
+  );
+}
+
+```
+
+============================================================
+FILE: components/finale/Finale.module.css
+------------------------------------------------------------
+```css
+.finale {
+  width: 100vw;
+  height: 100vh;
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  padding: 0 20px;
+}
+
+.title {
+  font-family: var(--font-im-fell), serif;
+  font-size: clamp(55px, 9vw, 140px);
+  letter-spacing: clamp(8px, 2vw, 30px);
+  color: var(--gold);
+  text-shadow: 0 0 100px var(--gold-dim);
+}
+
+.subTop {
+  font-size: 9px;
+  letter-spacing: 7px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.sub {
+  font-family: var(--font-cormorant), serif;
+  font-style: italic;
+  font-size: clamp(14px, 1.5vw, 22px);
+  color: var(--muted);
+  margin: 20px 0 55px;
+  letter-spacing: 3px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 35px;
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.12), rgba(201, 168, 76, 0.03));
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  border-radius: 100px;
+  color: var(--gold);
+  font-family: var(--font-jost), sans-serif;
+  font-size: 10px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+@media (min-width: 768px) {
+  .btn {
+    padding: 18px 55px;
+  }
+}
+
+```
+
+============================================================
+FILE: components/product/FloatingProduct.tsx
+------------------------------------------------------------
+```tsx
+"use client";
+
+import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
+import { ParallaxOffset } from "@/types";
+import ProductGlow from "./ProductGlow";
+import styles from "./FloatingProduct.module.css";
+
+interface FloatingProductProps {
+  image: string;
+  alt: string;
+  glow: string;
+  offset: ParallaxOffset;
+  visible: boolean;
+  priority?: boolean;
+}
+
+export default function FloatingProduct({
+  image,
+  alt,
+  glow,
+  visible,
+  priority = false,
+}: FloatingProductProps): JSX.Element {
+  return (
+    <motion.div
+      className={styles.wrap}
+      animate={visible ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.82 }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      aria-hidden
+    >
+      <ProductGlow glow={glow} />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={image}
+          className={styles.frame}
+          initial={{ opacity: 0, scale: 0.88 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.88 }}
+          transition={{
+            opacity: { duration: 0.42 },
+            scale: { duration: 0.82, ease: [0.16, 1, 0.3, 1] },
+          }}
+        >
+          <Image
+            src={image}
+            alt={alt}
+            fill
+            className={styles.fallback}
+            priority={priority}
+            sizes="(max-width: 768px) 160px, (max-width: 1280px) 220px, 280px"
+          />
+        </motion.div>
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+```
+
+============================================================
+FILE: components/product/FloatingProduct.module.css
+------------------------------------------------------------
+```css
+.wrap {
+  position: relative;
+  z-index: 10;
+  pointer-events: none;
+  perspective: 1400px;
+  transform-style: preserve-3d;
+  width: 160px;
+  height: 290px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.frame {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 30px 58px rgba(0, 0, 0, 0.62));
+  transform-style: preserve-3d;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.fallback {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+@media (min-width: 768px) {
+  .wrap {
+    width: 220px;
+    height: 400px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .wrap {
+    width: 280px;
+    height: 500px;
+  }
+}
+
+```
+
+============================================================
+FILE: components/product/ProductGlow.tsx
+------------------------------------------------------------
+```tsx
+"use client";
+
+interface ProductGlowProps {
+  glow: string;
+}
+
+export default function ProductGlow({ glow }: ProductGlowProps): JSX.Element {
+  return (
+    <div
+      className="absolute h-[220px] w-[220px] rounded-full opacity-45 blur-[65px] transition-[background] duration-[1500ms] md:h-[320px] md:w-[320px]"
+      style={{ background: glow }}
+      aria-hidden
+    />
+  );
+}
+
+```

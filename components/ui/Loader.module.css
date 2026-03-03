@@ -1,0 +1,78 @@
+.loader {
+  --berry-base: #5a1a2f;
+  --berry-soft: #8d4a64;
+  --berry-mist: #d8b8c4;
+  --berry-pearl: #f6e9ef;
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background:
+    radial-gradient(ellipse at 20% 60%, rgba(90, 26, 47, 0.38), transparent 58%),
+    radial-gradient(ellipse at 82% 20%, rgba(141, 74, 100, 0.2), transparent 52%),
+    linear-gradient(165deg, #090709 0%, #210d17 56%, #070608 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  opacity: 1;
+  transition: opacity 0.48s ease;
+}
+
+.loaderHiding {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.logoWrap {
+  position: relative;
+  width: clamp(220px, 42vw, 520px);
+  aspect-ratio: 3 / 1;
+}
+
+.logo {
+  object-fit: contain;
+}
+
+.barWrap {
+  width: min(260px, 68vw);
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(246, 233, 239, 0.16);
+  overflow: hidden;
+}
+
+.bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(216, 184, 196, 0.7), rgba(246, 233, 239, 0.95));
+  transform-origin: left center;
+  transform: scaleX(0);
+  animation: loaderBarFill 1.8s ease-out forwards 0.35s;
+}
+
+.sub {
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: rgba(246, 233, 239, 0.78);
+  text-transform: uppercase;
+  text-align: center;
+}
+
+@keyframes loaderBarFill {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader {
+    transition-duration: 0.001ms;
+  }
+
+  .bar {
+    animation: none;
+    transform: scaleX(1);
+  }
+}
